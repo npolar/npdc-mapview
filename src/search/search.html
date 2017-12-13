@@ -1,0 +1,58 @@
+
+
+
+<!DOCTYPE html>
+
+<npdc:search-input feed="feed"></npdc:search-input>
+
+
+<div class="npdc-search">
+  <md-content>
+
+    <section>
+      <npdc:loader ng-if="!feed.entries"></npdc:loader>
+
+      <div class="np-layout-list">
+        <md-list>
+        <!-- added ned link -->
+          <md-list-item class="md-2-line" ng-repeat="e in feed.entries" ng-href="{{ e.id }}">
+
+          {{ e.id }}
+
+            <img class="md-avatar" ng-src={{icon(e)}} title="ID: {{ e.id }}" >
+
+            <div class="md-list-item-text">
+              <h3 class="md-headline">
+              <h3>{{ e.target_database | t }} {{ e.species | t }} <em ng-if="e.habitat">「{{ e.habitat | t }}」</em><em ng-show=!{{e.draft}}>Draft</em>
+                </h3>
+              </h3>
+              <h4>{{ (e.event_date).substring(0,10) }}</h4>
+            </div>
+
+          </md-list-item>
+        </md-list>
+        <md-divider></md-divider>
+      </div>
+
+      <div layout-padding>
+        <div ng-if="feed.opensearch.totalResults > 0" layout layout-align="space-between center">
+          <div style="line-height: 48px;">{{feed.opensearch.totalResults}}
+            results, displaying
+            {{ feed.entries.length}}</div>
+          <div>
+            <md-button class="md-raised md-primary" ng-if="showNext()" ng-click="next()">More ...</md-button>
+          </div>
+        </div>
+        <div ng-if="feed.opensearch.totalResults == 0">{{ 'search.no_results' | t}} "{{q()}}"</div>
+      </div>
+    </section>
+  </md-content>
+</div>
+
+
+
+
+
+
+
+

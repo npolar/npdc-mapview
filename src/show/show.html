@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<npdc:edit-button class="np-primary-control"></npdc:edit-button>
+<npdc:loader ng-if="!document"></npdc:loader>
+
+
+<leaflet ng-if="document && mapOptions" options="mapOptions" class="coverage-map"></leaflet>
+<div ng-if="document" class="np-padding">
+
+
+<h3>{{document.title}}</h3>
+
+<h3>show</h3>
+
+
+   <p>{{ 'Category' | t }}:  {{ (document.category | t ) }}<p />
+    <p>{{ 'EPhorte no' | t }}: {{document.ephorte_no}}<p />
+    <p>{{ 'Description' | t }}: {{document.description}}<p />
+    <br />
+
+
+ <npdc:persons></npdc:persons>
+  <div ng-if="document.organisations">
+ <npdc:organisations></npdc:organisations>
+</div>
+
+  <div ng-if="document.locations">
+  <h3>{{ 'Locations' | t }}</h3>
+   <md-divider></md-divider>
+  <div ng-repeat="location in document.locations">
+     <p><md-icon>place</md-icon>{{ 'Placename' | t }}: {{location.placename}} </p>
+    <p> {{ 'Bounding area' | t }}: [[ {{location.north}} , {{location.east}} ],[ {{location.south}} , {{location.west}} ]] </p>
+
+
+
+   <p>{{ 'Place' | t }}: {{ location.place | t }} </p>
+
+    <!--     <p>{{ 'Place' | t }}: {{ (location.place).replace('_', ' ') | t }} </p> -->
+      <p>{{ 'Comment' | t }}: {{location.comment}} </p><br />
+    </div>
+  </div>
+
+
+<div ng-if="document.dates" >
+  <h3>{{ 'Dates' | t }}</h3>
+   <md-divider></md-divider>
+  <div ng-repeat="date1 in document.dates">
+   <p ng-if="date1.start_date">{{ 'Release date' | t }}: {{(date1.start_date).substr(0,10)}} </p></p>
+   <p ng-if="date1.intended_removal_date">{{ 'Intended removal date' | t }}: {{(date1.intended_removal_date).substr(0,10)}} </p>
+    <p ng-if="date1.end_date">{{ 'Removal date' | t }}: {{(date1.end_date).substr(0,10)}} </p>
+     <p ng-if="date1.comment_date">{{ 'Date comment' | t }}: {{ date1.comment_date }} </p>
+  </div>
+<br />
+</div>
+
+
+<div ng-if="document.rock_samples" || "document.soil_samples" || "document.sediment_samples" || "document.flora_samples" || "document.fauna_samples" || "document.interference_fauna_flora" || "document.introduced_species" || "document.animal_censors" || "document.explosives" || "document.radionucleides" || "document.ice_sampling" || "document.ice_coring" || "document.snow_sampling" || "document.air_sampling" || "document.water_sampling" || "document.other_invasive_activity">
+<h3>{{ 'Activities' | t }}</h3>
+   <md-divider></md-divider>
+   <p ng-if="document.rock_samples">{{ 'rock samples' | t }} </p>
+   <p ng-if="document.soil_samples">{{ 'soil samples' | t }} </p>
+   <p ng-if="document.sediment_samples">{{ 'sediment samples' | t }} </p>
+   <p ng-if="document.flora_samples"> {{ 'flora samples' | t }} </p>
+   <p ng-if="document.fauna_samples">{{ 'fauna samples' | t }} </p>
+   <p ng-if="document.interference_fauna_flora">{{ 'interference flora/fauna' | t }} </p>
+   <p ng-if="document.introduced_species">{{ 'introduced species' | t }} </p>
+   <p ng-if="document.animal_censors"> {{ 'animal censors' | t }} </p>
+   <p ng-if="document.explosives"> {{ 'explosives' | t }} </p>
+   <p ng-if="document.radionucleides"> {{ 'radionucleids' | t }} </p>
+   <p ng-if="document.ice_sampling"> {{ 'ice sampling' | t }} </p>
+   <p ng-if="document.ice_coring"> {{ 'ice coring' | t }} </p>
+   <p ng-if="document.snow_sampling"> {{ 'snow sampling' | t }} </p>
+   <p ng-if="document.air_sampling"> {{ 'air sampling' | t }} </p>
+   <p ng-if="document.water_sampling"> {{ 'water sampling' | t }} </p>
+   <p ng-if="document.other_invasive_activity"> {{ 'other invasive activity' | t }}</p>
+<br />
+</div>
+
+<div ng-if="document.instrument">
+  <h3>{{ 'Instruments' | t }}</h3>
+  <md-divider></md-divider>
+  <section ng-repeat="inst in document.instrument">
+        <p ng-if='inst["@instrument"]'>{{ 'Instrument' | t }}: {{ inst["@instrument"] }}</p>
+        <p ng-if="inst.instrument_description">{{ 'Instrument description' | t }}: {{ inst.instrument_description }}</p>
+        <p ng-if="inst.quantity">{{ 'Quantity' | t }}: {{ inst.quantity }}</p>
+       <br />
+  </section>
+</div>
+
+<div ng-if="document.contamination">
+  <h3>{{ 'Contamination' | t }}</h3>
+  <md-divider></md-divider>
+  <section ng-repeat="ctmn in document.contamination">
+         <p ng-if="ctmn.type">{{ 'Type' | t }}: {{ ctmn.type | t}}</p>
+         <p ng-if="ctmn.quantity">{{ 'Quantity' | t }}: {{ ctmn.quantity }}</p>
+         <p ng-if="ctmn.priority">{{ 'Priority' | t }}: {{ ctmn.priority | t }}</p>
+         <p ng-if="ctmn.impact_likelihood">{{ 'Likelihood of impact' | t }}: {{ ctmn.impact_likelihood | t}}</p>
+         <p ng-if="ctmn.impact_spatial">{{ 'Spatial impact' | t }}: {{ ctmn.impact_spatial | t }}</p>
+         <p ng-if="ctmn.impact_temporal">{{ 'Temporal impact' | t }}: {{ ctmn.impact_temporal | t }}</p>
+           <p ng-if="ctmn.impact_documented ">{{ 'Impact documented' | t }} </p>
+            <p ng-if="!ctmn.impact_documented ">{{ 'Impact not documented' | t }} </p>
+         <br />
+  </section>
+</div>
+
+<div ng-if="document.fuel">
+  <h3>{{ 'Fuel' | t }}</h3>
+  <md-divider></md-divider>
+  <section ng-repeat="fuel in document.fuel">
+     <p ng-if="fuel.fuel_tank">{{ 'Fuel tank' | t }}: {{ fuel.fuel_tank | t }}</p>
+     <p ng-if="fuel.quantity">{{ 'Quantity' | t }}: {{ fuel.quantity }} </p>
+     <p ng-if="fuel.content">{{ 'Content' | t }}: {{ fuel.content | t }}  </p>
+     <p ng-if="fuel.drum_full">{{ 'Drums full' | t }} </p>
+     <p ng-if="fuel.drum_emptied">{{ 'Drums emptied to be removed' | t }} </p>
+     <p ng-if="fuel.drum_not_extra_protected">{{ 'Drums without extra protection ' | t }} </p>
+     <p ng-if="fuel.expiration_date">{{ 'Expiration date' | t }}:  {{ (fuel.expiration_date).substr(0,10) }} </p>
+       <br />
+  </section>
+</div>
+
+
+  <section ng-if="security.hasSystem(resource.path)">
+     <div ng-if="document.files">
+     <h3>{{ 'Documents and photos' | t }}</h3>
+  <md-divider></md-divider>
+      <div ng-repeat="file in document.files">
+        <p><md-icon>file_download</md-icon> <a ng-href="{{file.uri+'?key='+key()}}">{{ file.filename}}</a> ({{ file.type }} {{ file.file_size | bytes }})</p>
+      </div>
+      <br />
+    </div>
+  </section>
+
+
+<section>
+ <div ng-if="document.links.length > 0">
+    <h3>{{ 'Links' | t }}</h3>
+    <md-divider></md-divider>
+    <md-list>
+      <md-list-item class="md-2-line" ng-repeat="link in document.links">
+        <div class="md-list-item-text">
+          <a ng-href="{{link.href}}">{{ link.title || link.href }}</a>
+          <p>{{ link.rel | t }}</p>
+        </div>
+      </md-list-item>
+    </md-list>
+    <br />
+</section>
+
+
+
+   <section ng-if="alternate">
+        <h3>{{ 'Machine-readable metadata' | t }}</h3>
+         <md-divider></md-divider>
+        <p>
+          <div ng-repeat="link in alternate">
+            <a ng-href="{{link.href}}" title="{{link.type}}">{{ link.title || link.href }}</a>
+            </div>
+        </p>
+      </section>
+
+      <section>
+        <npdc:document-meta></npdc:document-meta>
+      </section>
+
+
+
