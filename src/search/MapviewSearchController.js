@@ -7,16 +7,6 @@ var MapviewSearchController = function ($filter, $scope, $location, $controller,
   $controller('NpolarBaseController', { $scope: $scope });
   $scope.resource = Mapview;
 
-
-  //Search subtitles
-  npdcAppConfig.search.local.results.detail = function (entry) {
-    let categoryText = NpolarTranslate.translate(entry.category);
-    let lastupdateText = NpolarTranslate.translate('Last updated');
-    let r = convert(categoryText) + " - " + lastupdateText + ":";
-    return  r+` ${$filter('date')(entry.updated, 'd-M-yyyy')}`;
-  };
-
-
   npdcAppConfig.cardTitle = "Mapview";
   npdcAppConfig.search.local.results.subtitle = "target_database";
 
