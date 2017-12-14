@@ -22,8 +22,8 @@ var MapviewSearchController = function ($filter, $scope, $location, $controller,
 
 
   let query = function() {
-    let defaults = { limit: "all", sort: "-updated", fields: 'id,target_database,updated',
-      'date-year': 'updated', facets: 'target_database' };
+    let defaults = { limit: "all", sort: "-updated", fields: 'id,target_database,updated,map',
+      'date-year': 'updated', facets: 'target_database,map' };
    // let invariants = $scope.security.isAuthenticated() ? {} : {"not-draft": "yes"} ;
    let invariants = {};
     return Object.assign({}, defaults, invariants);
@@ -36,20 +36,5 @@ var MapviewSearchController = function ($filter, $scope, $location, $controller,
   });
 
 };
-
-/* convert from camelCase to lower case text*/
-function convert(str) {
-       var  positions = '';
-
-       for(var i=0; i<(str).length; i++){
-           if(str[i].match(/[A-Z]/) !== null){
-             positions += " ";
-             positions += str[i].toLowerCase();
-        } else {
-            positions += str[i];
-        }
-      }
-        return positions;
-       }
 
 module.exports = MapviewSearchController;
