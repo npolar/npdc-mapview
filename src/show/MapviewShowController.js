@@ -12,16 +12,17 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   //Show map in Antarctica
   $scope.mapOptions = {};
 
-  let the_arctic = [78.000, 16.000];
+  let arctic = [78.000, 16.000];
   let antarctica = [-72.01667, 2.5333];
-  //use map from Arctic or Antarctic
-  let mapselect = antarctica;
+
+  //use map from Arctic or Antarctic?
+  let mapselect = arctic;
 
 
-   var L = require('leaflet');
+  var L = require('leaflet');
   L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
 
-    var map = L.map('mapid', {
+  var map = L.map('mapid', {
       fullscreenControl: true,
       fullscreenControlOptions: {
       position: 'topleft'
@@ -36,11 +37,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
     var drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
 
+
      //Leaflet have problems with finding the map size
     //invalidateSize checks if the map container size has changed and updates map.
     //Since map resizing is done by css, need to delay the invalidateSize check.
-    setTimeout(function(){ map.invalidateSize()}, 20);
-
+    setTimeout(function(){ map.invalidateSize();}, 20);
 
 
    let show = function() {
@@ -53,7 +54,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       $scope.document.target_database = db.charAt(0).toUpperCase() + db.slice(1);
 
       //Fetch fields to search for
-      let fields = "id," + $scope.document.select_parameters.parameter + "," + $scope.document.display_parameters.parameters + "," + $scope.document.display_parameters.main_heading + "," + $scope.document.display_parameters.top_heading;
+      let fields = "id," + $scope.document.geojson + ','
+      + $scope.document.select_parameters.parameter + ","
+      + $scope.document.display_parameters.parameters + ","
+      + $scope.document.display_parameters.main_heading + ","
+      + $scope.document.display_parameters.top_heading;
 
       //Fetch data
       let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&fields=" + fields;
@@ -65,10 +70,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
         }),
         //on failure
         (function(response,status){
-          console.log("The request failed with response " + response + " and status code " + status);
+            console.log("The request failed with response " + response + " and status code " + status);
         }); //end getValues
-
-        console.log($scope);
 
   });  //promise
   }; //show
@@ -76,17 +79,28 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   show();
 
   // Estimate the diagram values
-function GetCoverage(data) {
+  function GetCoverage(data) {
 
-      //Test object for display
-      let coverage = [[-72.011389, 2.535], [-72.011389, 2.535],[-73.011389, 2.635], [-73.011389, 2.735]];
+     console.log(data);
 
-      L.polygon(coverage).addTo(map).bindPopup("Polygon.").openPopup();
+      //Get objects with locations, forget the rest
+      let coverage;
+      let len = data.feed.entries.length;
 
-      L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();
+      for (let i = 0; i < len; i++) {
+         //if locations exist and north is arctic
+           if ((data.feed.entries[i].hasOwnProperty('locations'))&&(data.feed.entries[i].locations.north>0)){
+             let loc = data.feed.entries[i].locations;
+                coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
+                L.polygon(coverage).addTo(map).bindPopup("Polygon.").openPopup();
 
-      //return null;
-}
+   //   L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();
+// }
+          }
+      }
+
+
+  }
 
 };
 
