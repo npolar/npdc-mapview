@@ -1,6 +1,6 @@
 'use strict';
 
-var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapviewService) {
+var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapviewService, MapJsonService) {
     'ngInject';
 
   $controller('NpolarBaseController', {
@@ -11,16 +11,42 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
   //Show map in Antarctica
   $scope.mapOptions = {};
-  //$scope.mapOptions.initcoord = [-72.011389, 2.535];
+
+  let the_arctic = [78.000, 16.000];
+  let antarctica = [-72.01667, 2.5333];
+  //use map from Arctic or Antarctic
+  let mapselect = antarctica;
 
 
-  let show = function() {
+   var L = require('leaflet');
+  L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
+
+    var map = L.map('mapid', {
+      fullscreenControl: true,
+      fullscreenControlOptions: {
+      position: 'topleft'
+      }}).setView(mapselect, 4);
+
+    L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/', {
+       maxZoom: 18,
+      attribution: 'Esmapri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community'
+    }).addTo(map);
+
+    // Initialise the FeatureGroup to store editable layers
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+     //Leaflet have problems with finding the map size
+    //invalidateSize checks if the map container size has changed and updates map.
+    //Since map resizing is done by css, need to delay the invalidateSize check.
+    setTimeout(function(){ map.invalidateSize()}, 20);
+
+
+
+   let show = function() {
 
 
     $scope.show().$promise.then((mapview) => {
-
-      console.log($scope);
-      console.log(mapview);
 
        //Show database name as title
       let db = $scope.document.target_database;
@@ -32,41 +58,39 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       //Fetch data
       let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&fields=" + fields;
 
+      MapviewService.getValues(link).then
+        // on success
+        (function(results) {
+            GetCoverage(results.data);
+        }),
+        //on failure
+        (function(response,status){
+          console.log("The request failed with response " + response + " and status code " + status);
+        }); //end getValues
 
-      MapviewService.getValues(link).then(
-        function(results) {
-            // on success
-            let config = results.data;
-            console.log(config);
+        console.log($scope);
 
-            //Search for location
-
-            //Display location
-
-      }); //end getValues
-
-
-      //Test object for display
-      let coverage = [[[-72.011389, 2.535], [-72.011389, 2.535]],[[-73.011389, 2.635], [-73.011389, 2.735]]];
-
-
-      let mapoptions = Object.assign({
-        geojson: "geojson",
-        coverage: coverage,
-        initcoord: [-72.011389, 2.535]
-      });
-
-      $scope.mapOptions = mapoptions;
-
-    });
-
-  };
-
+  });  //promise
+  }; //show
 
   show();
 
+  // Estimate the diagram values
+function GetCoverage(data) {
+
+      //Test object for display
+      let coverage = [[-72.011389, 2.535], [-72.011389, 2.535],[-73.011389, 2.635], [-73.011389, 2.735]];
+
+      L.polygon(coverage).addTo(map).bindPopup("Polygon.").openPopup();
+
+      L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();
+
+      //return null;
+}
 
 };
+
+
 
 
 module.exports = MapviewShowController;
