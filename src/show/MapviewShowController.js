@@ -14,7 +14,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
   //Show map in Antarctica or Svalbard
   let arctic = [78.000, 16.000];
-  //let antarctica = [-72.01667, 2.5333];
+  let antarctica = [-72.01667, 2.5333];
 
   //use map from Arctic or Antarctic?
   let mapselect = arctic;
@@ -39,7 +39,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
     map.addLayer(drawnItems);
 
 
-     //Leaflet have problems with finding the map size
+    //Leaflet have problems with finding the map size
     //invalidateSize checks if the map container size has changed and updates map.
     //Since map resizing is done by css, need to delay the invalidateSize check.
     setTimeout(function(){ map.invalidateSize();}, 20);
@@ -82,33 +82,50 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   // Estimate the diagram values
   function GetCoverage(data) {
 
-     console.log(data);
+     //console.log(data);
 
       //Get objects with locations, forget the rest
       let coverage;
       let len = data.feed.entries.length;
 
+      //loop through entries
       for (let i = 0; i < len; i++) {
-         //if locations exist and north is arctic
-           if ((data.feed.entries[i].hasOwnProperty('locations'))&&(data.feed.entries[i].locations.north>0)){
+           //if locations exist and north is arctic
+           if ((data.feed.entries[i].hasOwnProperty('locations'))&&(data.feed.entries[i].locations.north>0)&&(mapselect===arctic)){
              let loc = data.feed.entries[i].locations;
-                coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
-                L.polygon(coverage).addTo(map).bindPopup("Polygon 1.").openPopup();
-             //   var popup = L.popup().setLatLng([78.000, 14.000]).setContent("Polygon 2.").openOn(map);
+             console.log(loc.north, loc.south, loc.west, loc.east);
+                if ((loc.north === loc.south) && (loc.east === loc.west)) {
+                    var popup = L.popup().setLatLng([loc.north, loc.west]).setContent("Point").openOn(map);
+                } else {
+                     coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
+                      L.polygon(coverage).addTo(map).bindPopup("Polygon").openPopup();
+                }
 
-             //  map.openModal({
-             //    content: 'Content goes here'
-             //    });
-
-               map.fire('modal', {
-                content: 'your content HTML'
-               });
+             //  map.fire('modal', {
+             //   content: 'your content HTML'
+             //  });
 
 
    //   L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();
 // }
-          }
-      }
+          } //north
+          //if locations exist and north is antarctic
+           if ((data.feed.entries[i].hasOwnProperty('locations'))&&(data.feed.entries[i].locations.north<0)&&(mapselect===antarctica)){
+             let loc = data.feed.entries[i].locations;
+             console.log(loc.north, loc.south, loc.west, loc.east);
+                if ((loc.north === loc.south) && (loc.east === loc.west)) {
+                    var popup = L.popup().setLatLng([loc.north, loc.west]).setContent("Point").openOn(map);
+                } else {
+                     coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
+                     L.polygon(coverage).addTo(map).bindPopup("Polygon").openPopup();
+                };
+          } //south
+
+
+
+
+
+      } //loop theough entries
 
 
   }
