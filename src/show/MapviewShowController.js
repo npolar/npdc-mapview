@@ -9,11 +9,12 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   $scope.resource = Mapview;
 
 
-  //Show map in Antarctica
+
   $scope.mapOptions = {};
 
+  //Show map in Antarctica or Svalbard
   let arctic = [78.000, 16.000];
-  let antarctica = [-72.01667, 2.5333];
+  //let antarctica = [-72.01667, 2.5333];
 
   //use map from Arctic or Antarctic?
   let mapselect = arctic;
@@ -54,11 +55,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       $scope.document.target_database = db.charAt(0).toUpperCase() + db.slice(1);
 
       //Fetch fields to search for
-      let fields = "id," + $scope.document.geojson + ','
-      + $scope.document.select_parameters.parameter + ","
-      + $scope.document.display_parameters.parameters + ","
-      + $scope.document.display_parameters.main_heading + ","
-      + $scope.document.display_parameters.top_heading;
+      let fields = "id," + $scope.document.geojson +
+          ',' + $scope.document.select_parameters.parameter +
+          ',' + $scope.document.display_parameters.parameters +
+          ',' + $scope.document.display_parameters.main_heading +
+          ',' + $scope.document.display_parameters.top_heading;
 
       //Fetch data
       let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&fields=" + fields;
@@ -92,7 +93,17 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
            if ((data.feed.entries[i].hasOwnProperty('locations'))&&(data.feed.entries[i].locations.north>0)){
              let loc = data.feed.entries[i].locations;
                 coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
-                L.polygon(coverage).addTo(map).bindPopup("Polygon.").openPopup();
+                L.polygon(coverage).addTo(map).bindPopup("Polygon 1.").openPopup();
+             //   var popup = L.popup().setLatLng([78.000, 14.000]).setContent("Polygon 2.").openOn(map);
+
+             //  map.openModal({
+             //    content: 'Content goes here'
+             //    });
+
+               map.fire('modal', {
+                content: 'your content HTML'
+               });
+
 
    //   L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();
 // }
