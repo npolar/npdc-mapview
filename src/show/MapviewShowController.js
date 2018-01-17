@@ -1,6 +1,6 @@
 'use strict';
 
-var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapviewService, MapJsonService) {
+var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapviewService) {
     'ngInject';
 
   $controller('NpolarBaseController', {
@@ -101,9 +101,9 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                       L.polygon(coverage).addTo(map).bindPopup("Polygon").openPopup();
                 }
 
-             //  map.fire('modal', {
-             //   content: 'your content HTML'
-             //  });
+               map.fire('modal', {
+                content: 'your content HTML'
+               });
 
 
    //   L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();
@@ -118,7 +118,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                 } else {
                      coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
                      L.polygon(coverage).addTo(map).bindPopup("Polygon").openPopup();
-                };
+                }
           } //south
 
 
