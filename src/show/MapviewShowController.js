@@ -9,6 +9,24 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   $scope.resource = Mapview;
 
 
+//  $scope.master = {firstName:"John", lastName:"Doe"};
+//  $scope.params = {firstName:"John", lastName:"Doe"};
+  $scope.map = {
+    availableOptions: [
+      {id: '1', name: 'Arctic'},
+      {id: '2', name: 'Antactic'}
+    ],
+    selectedOption: {id: '1', name: 'Arctic'}
+  };
+
+  $scope.filter = function() {
+        console.log("filter", $scope);
+       // $scope.params = angular.copy($scope.master);
+  };
+  $scope.reset = function() {
+        console.log("reset", $scope);
+        $scope.map.selectedOption = {id: '1', name: 'Arctic'};
+  };
 
   $scope.mapOptions = {};
 
@@ -50,16 +68,26 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
     $scope.show().$promise.then((mapview) => {
 
-       //Show database name as title
+      //Show database name as title
       let db = $scope.document.target_database;
       $scope.document.target_database = db.charAt(0).toUpperCase() + db.slice(1);
 
-      //Fetch fields to search for
-      let fields = "id," + $scope.document.geojson +
-          ',' + $scope.document.select_parameters.parameter +
-          ',' + $scope.document.display_parameters.parameters +
-          ',' + $scope.document.display_parameters.main_heading +
-          ',' + $scope.document.display_parameters.top_heading;
+       Search($scope.document,db);
+
+
+  });  //promise
+  }; //show
+
+  show();
+
+  function Search(doc,db){
+
+     //Fetch fields to search for
+      let fields = "id," + doc.geojson +
+        //  ',' + $scope.document.select_parameters.parameter +
+          ',' + doc.display_parameters.parameters +
+          ',' + doc.display_parameters.main_heading +
+          ',' + doc.display_parameters.top_heading;
 
       //Fetch data
       let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&fields=" + fields;
@@ -73,11 +101,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
         (function(response,status){
             console.log("The request failed with response " + response + " and status code " + status);
         }); //end getValues
-
-  });  //promise
-  }; //show
-
-  show();
+  };
 
   // Estimate the diagram values
   function GetCoverage(data) {
@@ -101,9 +125,9 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                       L.polygon(coverage).addTo(map).bindPopup("Polygon").openPopup();
                 }
 
-               map.fire('modal', {
-                content: 'your content HTML'
-               });
+           //    map.fire('modal', {
+           //     content: 'your content HTML'
+           //    });
 
 
    //   L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();

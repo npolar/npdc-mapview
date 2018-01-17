@@ -4,12 +4,25 @@
 <npdc:loader ng-if="!document"></npdc:loader>
 
 <h3>&nbsp;&nbsp; {{document.target_database}}</h3>
-<div><p>select arctic, antarctic- map</p><p>activity_type-research,topographical mapping,outreach VIP,logistic operations,other</p><p>time</p><p>filter</p><p>clear</p></div>
+
+
+ <form>
+    <select name="mySelect" id="mySelect"
+      ng-options="option.name for option in map.availableOptions track by option.id"
+      ng-model="map.selectedOption"></select>
+    </select>
+
+<!-- First Name:<br>
+    <input type="text" ng-model="params.firstName"><br>
+    Last Name:<br>
+    <input type="text" ng-model="params.lastName"> -->
+<button ng-click="filter()">Filter</button>
+<button ng-click="reset()">Clear</button>
 
 
 <!--<leaflet ng-if="document && mapOptions" options="mapOptions" class="coverage-map"></leaflet> -->
 <div id="mapid" style="height: 800px; width:" + window.innerWidth + "px;" ></div>
-
+  </form>
 
 <div ng-if="document" class="np-padding"></div>
 
