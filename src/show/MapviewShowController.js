@@ -9,35 +9,17 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   $scope.resource = Mapview;
 
 
-//  $scope.master = {firstName:"John", lastName:"Doe"};
-//  $scope.params = {firstName:"John", lastName:"Doe"};
-  $scope.map = {
-    availableOptions: [
-      {id: '1', name: 'Arctic'},
-      {id: '2', name: 'Antactic'}
-    ],
-    selectedOption: {id: '1', name: 'Arctic'}
-  };
-
-  $scope.filter = function() {
-        console.log("filter", $scope);
-       // $scope.params = angular.copy($scope.master);
-  };
-  $scope.reset = function() {
-        console.log("reset", $scope);
-        $scope.map.selectedOption = {id: '1', name: 'Arctic'};
-  };
-
-  $scope.mapOptions = {};
+  //$scope.map = {};
 
   //Show map in Antarctica or Svalbard
   let arctic = [78.000, 16.000];
   let antarctica = [-72.01667, 2.5333];
+  let maps = [arctic, antarctica];
 
-  //use map from Arctic or Antarctic?
-  let mapselect = arctic;
+  //initialize with map from the Arctic
+  let mapselect = maps[0];
 
-
+  //Build map
   var L = require('leaflet');
   L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
 
@@ -45,17 +27,27 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       fullscreenControl: true,
       fullscreenControlOptions: {
       position: 'topleft'
-      }}).setView(mapselect, 4);
+  }}).setView(mapselect, 4);
 
-    L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/', {
-       maxZoom: 18,
+  L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/', {
+      maxZoom: 18,
       attribution: 'Esmapri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community'
-    }).addTo(map);
+  }).addTo(map);
 
-    // Initialise the FeatureGroup to store editable layers
-    var drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
+  // Initialise the FeatureGroup to store editable layers
+  var drawnItems = new L.FeatureGroup();
+  map.addLayer(drawnItems);
 
+  //Filter button
+  $scope.filter = function() {
+      let new_map =  maps[($scope.map_select.selectedOption.id)-1];
+      map.setView(new L.LatLng(new_map[0], new_map[1]), 4);
+  };
+  //Reset button
+  $scope.reset = function() {
+      console.log("reset", $scope);
+      $scope.map.selectedOption = {id: '1', name: 'Arctic'};
+  };
 
     //Leaflet have problems with finding the map size
     //invalidateSize checks if the map container size has changed and updates map.
@@ -63,19 +55,42 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
     setTimeout(function(){ map.invalidateSize();}, 20);
 
 
-   let show = function() {
+    let show = function() {
 
 
-    $scope.show().$promise.then((mapview) => {
+     $scope.show().$promise.then((mapview) => {
 
-      //Show database name as title
-      let db = $scope.document.target_database;
-      $scope.document.target_database = db.charAt(0).toUpperCase() + db.slice(1);
+       //Show database name as title
+       let db = $scope.document.target_database;
+       $scope.document.target_database = db.charAt(0).toUpperCase() + db.slice(1);
+
+       //Create map object - select menu
+       let map_arr=($scope.document.map).split(",");
+
+        console.log(map);
+        map.setView(new L.LatLng(-72.01667, 2.5333), 4);
+
+//       if (map_arr[0] === 'Antactica') {
+//           console.log(maps[1][0],maps[1][1]);
+//            map.setView(new L.LatLng(-72.01667, 2.5333), 4);
+//       };
+
+       let availableOptions = [];
+       for (let i = 0; i < map_arr.length; i++) {
+          availableOptions.push({ id:(i+1).toString(), name:map_arr[i] });
+       }
+
+       $scope.map_select = {
+        availableOptions: availableOptions,
+        selectedOption: {id: '1', name: map_arr[0]}
+       };
+
+
+
 
        Search($scope.document,db);
 
-
-  });  //promise
+    });  //promise
   }; //show
 
   show();
