@@ -1,6 +1,6 @@
 'use strict';
 
-var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapviewService) {
+var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapObjectService, MapviewService) {
     'ngInject';
 
   $controller('NpolarBaseController', {
@@ -8,26 +8,19 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   });
   $scope.resource = Mapview;
 
-
-  //$scope.map = {};
-
   //Show map in Antarctica or Svalbard
   let arctic = [78.000, 16.000];
   let antarctica = [-72.01667, 2.5333];
-  let maps = [arctic, antarctica];
-
-  //initialize with map from the Arctic
-  let mapselect = maps[0];
 
   //Build map
   var L = require('leaflet');
   L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
-
+  //Initiate map with arctic location
   var map = L.map('mapid', {
       fullscreenControl: true,
       fullscreenControlOptions: {
       position: 'topleft'
-  }}).setView(mapselect, 4);
+  }}).setView(antarctica, 4);
 
   L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/', {
       maxZoom: 18,
@@ -40,8 +33,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
   //Filter button
   $scope.filter = function() {
-      let new_map =  maps[($scope.map_select.selectedOption.id)-1];
-      map.setView(new L.LatLng(new_map[0], new_map[1]), 4);
+       console.log($scope.map_select.selectedOption.id);
+       let id = ($scope.map_select.selectedOption.id)-1;
+       let map_arr = MapObjectService.getMapObject();
+       console.log(map_arr, id);
+       map_arr[id] === 'Antarctica'? map.setView(new L.LatLng(-72.01667, 2.5333), 4) : map.setView(new L.LatLng(78.000, 16.000), 4);
   };
   //Reset button
   $scope.reset = function() {
@@ -67,13 +63,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
        //Create map object - select menu
        let map_arr=($scope.document.map).split(",");
 
-        console.log(map);
-        map.setView(new L.LatLng(-72.01667, 2.5333), 4);
-
-//       if (map_arr[0] === 'Antactica') {
-//           console.log(maps[1][0],maps[1][1]);
-//            map.setView(new L.LatLng(-72.01667, 2.5333), 4);
-//       };
+       MapObjectService.setMapObject(map_arr);
 
        let availableOptions = [];
        for (let i = 0; i < map_arr.length; i++) {
@@ -84,9 +74,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
         availableOptions: availableOptions,
         selectedOption: {id: '1', name: map_arr[0]}
        };
-
-
-
 
        Search($scope.document,db);
 
@@ -116,7 +103,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
         (function(response,status){
             console.log("The request failed with response " + response + " and status code " + status);
         }); //end getValues
-  };
+  }
 
   // Estimate the diagram values
   function GetCoverage(data) {
@@ -130,15 +117,17 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       //loop through entries
       for (let i = 0; i < len; i++) {
            //if locations exist and north is arctic
-           if ((data.feed.entries[i].hasOwnProperty('locations'))&&(data.feed.entries[i].locations.north>0)&&(mapselect===arctic)){
+           if (data.feed.entries[i].hasOwnProperty('locations')){
              let loc = data.feed.entries[i].locations;
              console.log(loc.north, loc.south, loc.west, loc.east);
+             if (loc.hasOwnProperty('north')&&(loc.north!==null)&&(loc.south!==null)&&(loc.west!==null)&&(loc.east!==null)) {
                 if ((loc.north === loc.south) && (loc.east === loc.west)) {
                     var popup = L.popup().setLatLng([loc.north, loc.west]).setContent("Point").openOn(map);
                 } else {
                      coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
                       L.polygon(coverage).addTo(map).bindPopup("Polygon").openPopup();
                 }
+             }
 
            //    map.fire('modal', {
            //     content: 'your content HTML'
@@ -148,25 +137,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
    //   L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();
 // }
           } //north
-          //if locations exist and north is antarctic
-           if ((data.feed.entries[i].hasOwnProperty('locations'))&&(data.feed.entries[i].locations.north<0)&&(mapselect===antarctica)){
-             let loc = data.feed.entries[i].locations;
-             console.log(loc.north, loc.south, loc.west, loc.east);
-                if ((loc.north === loc.south) && (loc.east === loc.west)) {
-                    var popup = L.popup().setLatLng([loc.north, loc.west]).setContent("Point").openOn(map);
-                } else {
-                     coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
-                     L.polygon(coverage).addTo(map).bindPopup("Polygon").openPopup();
-                }
-          } //south
 
+      } //loop through entries
 
-
-
-
-      } //loop theough entries
-
-
+       var map_arr = MapObjectService.getMapObject();
+       map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(-72.01667, 2.5333), 4) : map.setView(new L.LatLng(78.000, 16.000), 4);
   }
 
 };
