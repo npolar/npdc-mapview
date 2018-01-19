@@ -1,6 +1,6 @@
 'use strict';
 
-var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapObjectService, MapviewService) {
+var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapArrayService, MapviewService) {
     'ngInject';
 
   $controller('NpolarBaseController', {
@@ -34,12 +34,12 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   //Filter button
   $scope.filter = function() {
        let id = ($scope.map_select.selectedOption.id)-1;
-       let map_arr = MapObjectService.getMapObject();
+       let map_arr = MapArrayService.getArray(0);
        map_arr[id] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
   };
   //Reset button
   $scope.reset = function() {
-      let map_arr = MapObjectService.getMapObject();
+      let map_arr = MapArrayService.getArray(0);
       $scope.map_select.selectedOption = {id: '1', name: map_arr[0]};
       map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
   };
@@ -59,10 +59,10 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
        let db = $scope.document.target_database;
        $scope.document.target_database = db.charAt(0).toUpperCase() + db.slice(1);
 
-       //Create map object - select menu
+       //Create map select menu
        let map_arr=($scope.document.map).split(",");
 
-       MapObjectService.setMapObject(map_arr);
+       MapArrayService.setArray(map_arr,0);
 
        let availableOptions = [];
        for (let i = 0; i < map_arr.length; i++) {
@@ -74,12 +74,33 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
         selectedOption: {id: '1', name: map_arr[0]}
        };
 
+       //Create the other select menus
+       $scope.select0 = Select($scope.document.select[0].enum,0);
+       $scope.select1 = Select($scope.document.select[1].enum,1);
+       $scope.select2 = Select($scope.document.select[2].enum,2);
+
        Search($scope.document,db);
 
     });  //promise
   }; //show
 
   show();
+
+  //Get the select menus running
+  function Select(select_arr,count){
+       MapArrayService.setArray(select_arr,count+1);
+       console.log("array", MapArrayService.getArray(count+1));
+
+       let availableOptions = [];
+       for (let j = 0; j < select_arr.length; j++) {
+          availableOptions.push({ id:(j+1).toString(), name:select_arr[j] });
+       }
+
+       return {
+        availableOptions: availableOptions,
+        selectedOption: {id: '1', name: select_arr[count+1][0]}
+       };
+  }
 
   function Search(doc,db){
 
@@ -139,7 +160,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
       } //loop through entries
 
-       var map_arr = MapObjectService.getMapObject();
+       var map_arr = MapArrayService.getArray(0);
        map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
   }
 

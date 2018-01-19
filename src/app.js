@@ -14,7 +14,7 @@ npdcMapviewApp.controller('MapviewShowController', require('./show/MapviewShowCo
 npdcMapviewApp.controller('MapviewSearchController', require('./search/MapviewSearchController'));
 npdcMapviewApp.factory('Mapview', require('./Mapview.js'));
 npdcMapviewApp.factory('MapviewService', require('./show/MapviewService.js'));
-npdcMapviewApp.factory('MapObjectService', require('./show/MapObjectService.js'));
+npdcMapviewApp.factory('MapArrayService', require('./show/MapArrayService.js'));
 
 
 

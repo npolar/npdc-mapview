@@ -7,9 +7,21 @@
 
 
  <form>
-    <select name="mySelect" id="mySelect"
+    &nbsp;&nbsp; <select name="map" id="map"
       ng-options="option.name for option in map_select.availableOptions track by option.id"
       ng-model="map_select.selectedOption"></select>
+    </select>
+     <select name="select0" id="select0"
+      ng-options="option.name for option in select0.availableOptions track by option.id"
+      ng-model="select0.selectedOption"></select>
+    </select>
+     <select name="select1" id="select1"
+      ng-options="option.name for option in select1.availableOptions track by option.id"
+      ng-model="select1.selectedOption"></select>
+    </select>
+     <select name="select2" id="select2"
+      ng-options="option.name for option in select2.availableOptions track by option.id"
+      ng-model="select2.selectedOption"></select>
     </select>
 <button ng-click="filter()">Filter</button>
 <button ng-click="reset()">Clear</button>
