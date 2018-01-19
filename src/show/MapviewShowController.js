@@ -36,6 +36,9 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
        let id = ($scope.map_select.selectedOption.id)-1;
        let map_arr = MapArrayService.getArray(0);
        map_arr[id] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
+       let select0 = MapArrayService.getArray(1);
+       let select1 = MapArrayService.getArray(2);
+       let select2 = MapArrayService.getArray(3);
   };
   //Reset button
   $scope.reset = function() {
@@ -61,23 +64,12 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
        //Create map select menu
        let map_arr=($scope.document.map).split(",");
+       $scope.map_select = Select(MapArrayService.setArray(map_arr,0),0);
 
-       MapArrayService.setArray(map_arr,0);
-
-       let availableOptions = [];
-       for (let i = 0; i < map_arr.length; i++) {
-          availableOptions.push({ id:(i+1).toString(), name:map_arr[i] });
-       }
-
-       $scope.map_select = {
-        availableOptions: availableOptions,
-        selectedOption: {id: '1', name: map_arr[0]}
-       };
-
-       //Create the other select menus
-       $scope.select0 = Select($scope.document.select[0].enum,0);
-       $scope.select1 = Select($scope.document.select[1].enum,1);
-       $scope.select2 = Select($scope.document.select[2].enum,2);
+       //Create the other three select menus
+       $scope.select0 = Select($scope.document.select[0].enum,1);
+       $scope.select1 = Select($scope.document.select[1].enum,2);
+       $scope.select2 = Select($scope.document.select[2].enum,3);
 
        Search($scope.document,db);
 
@@ -88,9 +80,10 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
   //Get the select menus running
   function Select(select_arr,count){
-       MapArrayService.setArray(select_arr,count+1);
-       console.log("array", MapArrayService.getArray(count+1));
+       //Fetch data from service
+       MapArrayService.setArray(select_arr,count);
 
+       //Push to select
        let availableOptions = [];
        for (let j = 0; j < select_arr.length; j++) {
           availableOptions.push({ id:(j+1).toString(), name:select_arr[j] });
@@ -98,10 +91,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
        return {
         availableOptions: availableOptions,
-        selectedOption: {id: '1', name: select_arr[count+1][0]}
+        selectedOption: {id: '1', name: select_arr[count][0]}
        };
   }
 
+   //The database search call get display items
   function Search(doc,db){
 
      //Fetch fields to search for
@@ -139,7 +133,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
            //if locations exist and north is arctic
            if (data.feed.entries[i].hasOwnProperty('locations')){
              let loc = data.feed.entries[i].locations;
-             console.log(loc.north, loc.south, loc.west, loc.east);
+            // console.log(loc.north, loc.south, loc.west, loc.east);
              if (loc.hasOwnProperty('north')&&(loc.north!==null)&&(loc.south!==null)&&(loc.west!==null)&&(loc.east!==null)) {
                 if ((loc.north === loc.south) && (loc.east === loc.west)) {
                     var popup = L.popup().setLatLng([loc.north, loc.west]).setContent("Point").openOn(map);

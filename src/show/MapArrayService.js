@@ -13,7 +13,6 @@ var MapArrayService = function() {
      //Setter
      setArray: function(arr,key) {
         obj[key] = arr;
-        console.log("set",obj);
         return obj[key];
      }
   };
