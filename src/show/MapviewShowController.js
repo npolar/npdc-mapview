@@ -33,16 +33,15 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
   //Filter button
   $scope.filter = function() {
-       console.log($scope.map_select.selectedOption.id);
        let id = ($scope.map_select.selectedOption.id)-1;
        let map_arr = MapObjectService.getMapObject();
-       console.log(map_arr, id);
-       map_arr[id] === 'Antarctica'? map.setView(new L.LatLng(-72.01667, 2.5333), 4) : map.setView(new L.LatLng(78.000, 16.000), 4);
+       map_arr[id] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
   };
   //Reset button
   $scope.reset = function() {
-      console.log("reset", $scope);
-      $scope.map.selectedOption = {id: '1', name: 'Arctic'};
+      let map_arr = MapObjectService.getMapObject();
+      $scope.map_select.selectedOption = {id: '1', name: map_arr[0]};
+      map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
   };
 
     //Leaflet have problems with finding the map size
@@ -141,7 +140,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       } //loop through entries
 
        var map_arr = MapObjectService.getMapObject();
-       map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(-72.01667, 2.5333), 4) : map.setView(new L.LatLng(78.000, 16.000), 4);
+       map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
   }
 
 };
