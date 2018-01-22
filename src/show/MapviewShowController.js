@@ -60,7 +60,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
        //Show database name as title
        let db = $scope.document.target_database;
-       $scope.document.target_database = db.charAt(0).toUpperCase() + db.slice(1);
 
        //Create map select menu
        let map_arr=($scope.document.map).split(",");
@@ -100,13 +99,13 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
      //Fetch fields to search for
       let fields = "id," + doc.geojson +
-        //  ',' + $scope.document.select_parameters.parameter +
-          ',' + doc.display_parameters.parameters +
-          ',' + doc.display_parameters.main_heading +
-          ',' + doc.display_parameters.top_heading;
+          ',' + doc.display_parameters[0].parameter +
+          ',' + doc.display_main_heading +
+          ',' + doc.display_top_heading;
 
       //Fetch data
       let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&fields=" + fields;
+      console.log(link);
 
       MapviewService.getValues(link).then
         // on success
@@ -155,6 +154,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       } //loop through entries
 
        var map_arr = MapArrayService.getArray(0);
+       console.log("continent",map_arr);
        map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
   }
 
