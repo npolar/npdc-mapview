@@ -70,7 +70,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
        $scope.select1 = Select($scope.document.select[1].enum,2);
        $scope.select2 = Select($scope.document.select[2].enum,3);
 
-       Search($scope.document,db);
+       Search($scope.document,db,$scope.document.search_init);
 
     });  //promise
   }; //show
@@ -95,7 +95,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   }
 
    //The database search call get display items
-  function Search(doc,db){
+  function Search(doc,db,search_init){
 
      //Fetch fields to search for
       let fields = "id," + doc.geojson +
@@ -104,13 +104,13 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
           ',' + doc.display_top_heading;
 
       //Fetch data
-      let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&fields=" + fields;
+      let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&limit=all&"+search_init+"&fields=" + fields;
       console.log(link);
 
       MapviewService.getValues(link).then
         // on success
         (function(results) {
-            GetCoverage(results.data);
+            GetCoverage(results.data,db);
         }),
         //on failure
         (function(response,status){
@@ -119,7 +119,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   }
 
   // Estimate the diagram values
-  function GetCoverage(data) {
+  function GetCoverage(data,db) {
 
      //console.log(data);
 
@@ -127,6 +127,37 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       let coverage;
       let len = data.feed.entries.length;
 
+      console.log("data",data);
+
+      //Unstandarized data for location - this need to be fixed to get efficient code!
+      if (db==="geology/sample") {
+           //Loop through entries
+           for (let i = 0; i < len; i++) {
+           if ((data.feed.entries[i].hasOwnProperty('latitude'))||(data.feed.entries[i].hasOwnProperty('longitude'))){
+             let lat = data.feed.entries[i].latitude;
+             let lng = data.feed.entries[i].longitude;
+             L.marker([lat, lng]).addTo(map).bindPopup('A').openPopup();
+             }
+          } //north
+      }
+
+      //Unstandarized data for location
+      if (db==="seabird-colony") {
+          //loop through entries
+      for (let i = 0; i < len; i++) {
+          let  entry = data.feed.entries[i];
+          if (entry.hasOwnProperty('geometry')){
+             if (entry.geometry.type === 'Point') {
+                L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).addTo(map).bindPopup('B').openPopup();
+             } else if  ((entry.geometry.type==='GeometryCollection')&&(entry.geometry.geometries.type==='Point')){
+                L.marker([entry.geometry.geometries.coordinates[1],entry.geometry.geometries.coordinates[0]]).addTo(map).bindPopup('B').openPopup();
+             }
+          } //geometry
+
+      } //loop through entries
+      } //seabird-colony
+
+      if (db==="expedition") {
       //loop through entries
       for (let i = 0; i < len; i++) {
            //if locations exist and north is arctic
@@ -152,9 +183,9 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
           } //north
 
       } //loop through entries
+    } //expedition
 
        var map_arr = MapArrayService.getArray(0);
-       console.log("continent",map_arr);
        map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
   }
 
