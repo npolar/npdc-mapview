@@ -33,12 +33,28 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
   //Filter button
   $scope.filter = function() {
-       let id = ($scope.map_select.selectedOption.id)-1;
+       let search_init = $scope.document.search_init;
+
+       let map_id = ($scope.map_select.selectedOption.id)-1;
        let map_arr = MapArrayService.getArray(0);
-       map_arr[id] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
-       let select0 = MapArrayService.getArray(1);
-       let select1 = MapArrayService.getArray(2);
-       let select2 = MapArrayService.getArray(3);
+       map_arr[map_id] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
+       let sel0_id = ($scope.select0.selectedOption.id)-1;
+       let sel0_arr = MapArrayService.getArray(1);
+       let sel1_id = ($scope.select1.selectedOption.id)-1;
+       let sel1_arr = MapArrayService.getArray(2);
+       let sel2_id = ($scope.select2.selectedOption.id)-1;
+       let sel2_arr = MapArrayService.getArray(3);
+       search_init = search_init + (sel0_id !== 0 ?  ("," + $scope.document.select[0].entry + "=" + sel0_arr[sel0_id]):"")
+          + (sel1_id !== 0 ?  ("," + $scope.document.select[1].entry + "=" + sel1_arr[sel1_id]):"")
+          + (sel2_id !== 0 ?  ("," + $scope.document.select[2].entry + "=" + sel2_arr[sel2_id]):"");
+
+
+       console.log("search_init", search_init.toLowerCase());
+
+
+
+       Search($scope.document,search_init.toLowerCase());
+
   };
   //Reset button
   $scope.reset = function() {
@@ -58,8 +74,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
      $scope.show().$promise.then((mapview) => {
 
-       //Show database name as title
-       let db = $scope.document.target_database;
 
        //Create map select menu
        let map_arr=($scope.document.map).split(",");
@@ -70,7 +84,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
        $scope.select1 = Select($scope.document.select[1].enum,2);
        $scope.select2 = Select($scope.document.select[2].enum,3);
 
-       Search($scope.document,db,$scope.document.search_init);
+       Search($scope.document,$scope.document.search_init);
 
     });  //promise
   }; //show
@@ -95,13 +109,22 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   }
 
    //The database search call get display items
-  function Search(doc,db,search_init){
+  function Search(doc,search_init){
 
-     //Fetch fields to search for
-      let fields = "id," + doc.geojson +
-          ',' + doc.display_parameters[0].parameter +
+      //Show database name as title
+       let db = doc.target_database;
+
+
+      //Fetch fields to search for
+      let fields = "id," + doc.location +
           ',' + doc.display_main_heading +
           ',' + doc.display_top_heading;
+
+      for (let k = 0; k < doc.display_parameters.length; k++) {
+          fields = fields + ',' + doc.display_parameters[k].parameter;
+      }
+
+
 
       //Fetch data
       let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&limit=all&"+search_init+"&fields=" + fields;

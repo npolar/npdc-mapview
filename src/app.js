@@ -4,11 +4,13 @@ var npdcCommon = require('npdc-common');
 var AutoConfig = npdcCommon.AutoConfig;
 
 var angular = require('angular');
-require('npdc-common/src/wrappers/leaflet');
+
+//require('leaflet');
+require('../node_modules/leaflet');
 require('leaflet-modal');
 
 
-var npdcMapviewApp = angular.module('npdcMapviewApp', ['npdcCommon','leaflet']);
+var npdcMapviewApp = angular.module('npdcMapviewApp', ['npdcCommon']);
 
 npdcMapviewApp.controller('MapviewShowController', require('./show/MapviewShowController'));
 npdcMapviewApp.controller('MapviewSearchController', require('./search/MapviewSearchController'));
