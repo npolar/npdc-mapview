@@ -176,7 +176,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
            for (let i = 0; i < len; i++) {
               let entry =  data.feed.entries[i];
            if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
-              // L.marker([lat, lng]).addTo(map).bindPopup('A').openPopup();
+              //var marker =  L.marker([entry.latitude, entry.longitude]).addTo(map).bindPopup('A');
               markers.addLayer(L.marker([entry.latitude, entry.longitude]));
               map.addLayer(markers);
            }
@@ -190,9 +190,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
           let  entry = data.feed.entries[i];
           if (entry.hasOwnProperty('geometry')){
              if (entry.geometry.type === 'Point') {
-                L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).addTo(map).bindPopup('B').openPopup();
+                markers.addLayer(L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]));
+                map.addLayer(markers);
              } else if  ((entry.geometry.type==='GeometryCollection')&&(entry.geometry.geometries.type==='Point')){
-                L.marker([entry.geometry.geometries.coordinates[1],entry.geometry.geometries.coordinates[0]]).addTo(map).bindPopup('B').openPopup();
+                markers.addLayer(L.marker([entry.geometry.geometries.coordinates[1],entry.geometry.geometries.coordinates[0]]));
+                map.addLayer(markers);
              }
           } //geometry
 

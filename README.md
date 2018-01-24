@@ -1,9 +1,9 @@
 # npdc-inventory
-NPI inventory database
+NPI mapview database
 
 Purpose:
-Register inventory sites in Antarctica.
-Register instruments used by NPI.
+View data on maps from other databases.
+
 
 Use:
-To register expeditions and samples taken: Link to expedition database which should be connected to a track.
+Configure Couchdb with data fitting corresponing schema and see if it runs.
