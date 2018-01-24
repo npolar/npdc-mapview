@@ -35,23 +35,37 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   $scope.filter = function() {
        let search_init = $scope.document.search_init;
 
+       //Get selected map choice
        let map_id = ($scope.map_select.selectedOption.id)-1;
        let map_arr = MapArrayService.getArray(0);
        map_arr[map_id] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
-       let sel0_id = ($scope.select0.selectedOption.id)-1;
-       let sel0_arr = MapArrayService.getArray(1);
-       let sel1_id = ($scope.select1.selectedOption.id)-1;
-       let sel1_arr = MapArrayService.getArray(2);
-       let sel2_id = ($scope.select2.selectedOption.id)-1;
-       let sel2_arr = MapArrayService.getArray(3);
-       search_init = search_init + (sel0_id !== 0 ?  ("," + $scope.document.select[0].entry + "=" + sel0_arr[sel0_id]):"")
-          + (sel1_id !== 0 ?  ("," + $scope.document.select[1].entry + "=" + sel1_arr[sel1_id]):"")
-          + (sel2_id !== 0 ?  ("," + $scope.document.select[2].entry + "=" + sel2_arr[sel2_id]):"");
 
 
+       //Get the other choices
+       let sel_id_arr = [(($scope.select0.selectedOption.id)-1), (($scope.select1.selectedOption.id)-1), (($scope.select2.selectedOption.id)-1)];
+
+       //Go through the select menus
+       for (let j = 0; j < $scope.document.select.length; j++) {
+
+            let sel_arr = MapArrayService.getArray(j+1);
+
+            //Add entry to select string
+            let init_str = (sel_id_arr[j] !== 0 ?  ("&filter-" + $scope.document.select[j].entry + "=" + sel_arr[sel_id_arr[j]]):"");
+
+            //Have to check especially for date since this is an interval, not year as listed in select menu
+            //if yes, overwrite init_str
+
+            if (($scope.document.select[j].entry).includes("date") && (sel_id_arr[j] !== 0)) {
+                init_str = "&filter-" + $scope.document.select[j].entry + "=" + sel_arr[sel_id_arr[j]] + "-01-01T00:00:00Z.." + (parseInt(sel_arr[sel_id_arr[j]])+1).toString() + "-01-01T00:00:00Z"; }
+
+            search_init = search_init + init_str;
+       }
+
+
+
+      //If search_init starts with &, remove it
+      if (search_init.charAt(0) === '&') { search_init = search_init.substring(1); }
        console.log("search_init", search_init.toLowerCase());
-
-
 
        Search($scope.document,search_init.toLowerCase());
 
