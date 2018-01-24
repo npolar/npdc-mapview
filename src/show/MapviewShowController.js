@@ -14,7 +14,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
   //Build map
   var L = require('leaflet');
-  L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
+
   //Initiate map with arctic location
   var map = L.map('mapid', {
       fullscreenControl: true,
@@ -61,19 +61,21 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
             search_init = search_init + init_str;
        }
 
-
-
       //If search_init starts with &, remove it
       if (search_init.charAt(0) === '&') { search_init = search_init.substring(1); }
-       console.log("search_init", search_init.toLowerCase());
 
-       Search($scope.document,search_init.toLowerCase());
+      Search($scope.document,search_init.toLowerCase());
 
   };
   //Reset button
   $scope.reset = function() {
       let map_arr = MapArrayService.getArray(0);
       $scope.map_select.selectedOption = {id: '1', name: map_arr[0]};
+      $scope.select0.selectedOption = {id: '1', name: MapArrayService.getArray(1)[0]};
+      $scope.select1.selectedOption = {id: '1', name: MapArrayService.getArray(1)[1]};
+      $scope.select2.selectedOption = {id: '1', name: MapArrayService.getArray(1)[2]};
+      let search_init = $scope.document.search_init;
+      Search($scope.document,search_init);
       map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
   };
 
@@ -164,17 +166,20 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       let coverage;
       let len = data.feed.entries.length;
 
-      console.log("data",data);
+      var markers = L.markerClusterGroup();
+
+       console.log("data",data);
 
       //Unstandarized data for location - this need to be fixed to get efficient code!
       if (db==="geology/sample") {
            //Loop through entries
            for (let i = 0; i < len; i++) {
-           if ((data.feed.entries[i].hasOwnProperty('latitude'))||(data.feed.entries[i].hasOwnProperty('longitude'))){
-             let lat = data.feed.entries[i].latitude;
-             let lng = data.feed.entries[i].longitude;
-             L.marker([lat, lng]).addTo(map).bindPopup('A').openPopup();
-             }
+              let entry =  data.feed.entries[i];
+           if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
+              // L.marker([lat, lng]).addTo(map).bindPopup('A').openPopup();
+              markers.addLayer(L.marker([entry.latitude, entry.longitude]));
+              map.addLayer(markers);
+           }
           } //north
       }
 
