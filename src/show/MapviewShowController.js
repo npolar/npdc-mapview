@@ -13,7 +13,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   let antarctica = [-72.01667, 2.5333];
 
   //Build map
-  var L = require('leaflet');
+  var L = require('../../node_modules/leaflet');
+   L.Icon.Default.imagePath = '../../node_modules/leaflet/dist/images/';
+require('leaflet-modal');
+require('leaflet.markercluster');
+
 
   //Initiate map with arctic location
   var map = L.map('mapid', {
@@ -176,9 +180,10 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
            for (let i = 0; i < len; i++) {
               let entry =  data.feed.entries[i];
            if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
-              //var marker =  L.marker([entry.latitude, entry.longitude]).addTo(map).bindPopup('A');
-              markers.addLayer(L.marker([entry.latitude, entry.longitude]));
-              map.addLayer(markers);
+                var marker =  L.marker([entry.latitude, entry.longitude]).addTo(map).bindPopup('A');
+              // markers.addLayer(L.marker([entry.latitude, entry.longitude]));
+               markers.addLayer(marker);
+               map.addLayer(markers);
            }
           } //north
       }

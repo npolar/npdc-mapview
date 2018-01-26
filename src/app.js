@@ -5,10 +5,7 @@ var AutoConfig = npdcCommon.AutoConfig;
 
 var angular = require('angular');
 
-//require('leaflet');
-require('../node_modules/leaflet');
-require('leaflet-modal');
-require('leaflet.markercluster');
+
 
 var npdcMapviewApp = angular.module('npdcMapviewApp', ['npdcCommon']);
 
