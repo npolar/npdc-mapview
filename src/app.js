@@ -1,5 +1,4 @@
 'use strict';
-//var environment = require('../environment');
 var npdcCommon = require('npdc-common');
 var AutoConfig = npdcCommon.AutoConfig;
 
@@ -9,14 +8,12 @@ var angular = require('angular');
 
 var npdcMapviewApp = angular.module('npdcMapviewApp', ['npdcCommon']);
 
+
 npdcMapviewApp.controller('MapviewShowController', require('./show/MapviewShowController'));
 npdcMapviewApp.controller('MapviewSearchController', require('./search/MapviewSearchController'));
 npdcMapviewApp.factory('Mapview', require('./Mapview.js'));
 npdcMapviewApp.factory('MapviewService', require('./show/MapviewService.js'));
 npdcMapviewApp.factory('MapArrayService', require('./show/MapArrayService.js'));
-
-
-
 
 
 // Bootstrap ngResource models using NpolarApiResource

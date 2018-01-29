@@ -13,18 +13,19 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   let antarctica = [-72.01667, 2.5333];
 
   //Build map
-  var L = require('../../node_modules/leaflet');
-   L.Icon.Default.imagePath = '../../node_modules/leaflet/dist/images/';
+let L = require('../../node_modules/leaflet');
+
+
+ //  L.Icon.Default.imagePath = '../../node_modules/leaflet/dist/images/';
 require('leaflet-modal');
 require('leaflet.markercluster');
-
 
   //Initiate map with arctic location
   var map = L.map('mapid', {
       fullscreenControl: true,
       fullscreenControlOptions: {
       position: 'topleft'
-  }}).setView(antarctica, 4);
+  }}).setView(arctic, 4);
 
   L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/', {
       maxZoom: 18,
@@ -164,6 +165,13 @@ require('leaflet.markercluster');
   // Estimate the diagram values
   function GetCoverage(data,db) {
 
+    var redIcon = L.Icon.extend({
+          options: {
+            iconUrl:  'marker-icon.png',
+            iconSize: [8, 8]
+          }
+    });
+
      //console.log(data);
 
       //Get objects with locations, forget the rest
@@ -174,18 +182,21 @@ require('leaflet.markercluster');
 
        console.log("data",data);
 
+
       //Unstandarized data for location - this need to be fixed to get efficient code!
       if (db==="geology/sample") {
+
            //Loop through entries
            for (let i = 0; i < len; i++) {
               let entry =  data.feed.entries[i];
            if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
-                var marker =  L.marker([entry.latitude, entry.longitude]).addTo(map).bindPopup('A');
-              // markers.addLayer(L.marker([entry.latitude, entry.longitude]));
+               var title = "title";
+               var marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(title);
                markers.addLayer(marker);
                map.addLayer(markers);
            }
           } //north
+
       }
 
       //Unstandarized data for location
@@ -239,6 +250,7 @@ require('leaflet.markercluster');
   }
 
 };
+
 
 
 
