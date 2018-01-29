@@ -1,4 +1,4 @@
-# npdc-inventory
+# npdc-mapview
 NPI mapview database
 
 Purpose:

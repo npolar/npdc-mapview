@@ -3,9 +3,6 @@
 function Mapview( $q, MapviewResource) {
   'ngInject';
 
-//  const schema = 'http://api.npolar.no/schema/inventory';
-
-//  InventoryResource.schema = schema;
 
   MapviewResource.create = function() {
 
