@@ -43,7 +43,7 @@ require('leaflet.markercluster');
        //Get selected map choice
        let map_id = ($scope.map_select.selectedOption.id)-1;
        let map_arr = MapArrayService.getArray(0);
-       map_arr[map_id] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
+     //  map_arr[map_id] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
 
 
        //Get the other choices
@@ -69,7 +69,7 @@ require('leaflet.markercluster');
       //If search_init starts with &, remove it
       if (search_init.charAt(0) === '&') { search_init = search_init.substring(1); }
 
-      Search($scope.document,search_init.toLowerCase());
+      Search($scope.document,search_init.toLowerCase(),map_arr[map_id]);
 
   };
   //Reset button
@@ -80,8 +80,7 @@ require('leaflet.markercluster');
       $scope.select1.selectedOption = {id: '1', name: MapArrayService.getArray(1)[1]};
       $scope.select2.selectedOption = {id: '1', name: MapArrayService.getArray(1)[2]};
       let search_init = $scope.document.search_init;
-      Search($scope.document,search_init);
-      map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
+      Search($scope.document,search_init,map_arr[0]);
   };
 
     //Leaflet have problems with finding the map size
@@ -105,7 +104,7 @@ require('leaflet.markercluster');
        $scope.select1 = Select($scope.document.select[1].enum,2);
        $scope.select2 = Select($scope.document.select[2].enum,3);
 
-       Search($scope.document,$scope.document.search_init);
+       Search($scope.document,$scope.document.search_init,map_arr[0]);
 
     });  //promise
   }; //show
@@ -129,11 +128,15 @@ require('leaflet.markercluster');
        };
   }
 
-   //The database search call get display items
-  function Search(doc,search_init){
+  //The database search call get display items
+  function Search(doc,search_init,mapval){
 
       //Show database name as title
-       let db = doc.target_database;
+      let db = doc.target_database;
+
+      //update map
+      //var map_arr = MapArrayService.getArray(0);
+      mapval === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
 
 
       //Fetch fields to search for
@@ -237,9 +240,7 @@ require('leaflet.markercluster');
       } //loop through entries
     } //expedition
 
-       var map_arr = MapArrayService.getArray(0);
-       map_arr[0] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
-  }
+       }
 
 };
 
