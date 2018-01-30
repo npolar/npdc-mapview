@@ -16,7 +16,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 let L = require('../../node_modules/leaflet');
 
 
- //  L.Icon.Default.imagePath = '../../node_modules/leaflet/dist/images/';
+
+L.Icon.Default.imagePath = '../assets/images/';
 require('leaflet-modal');
 require('leaflet.markercluster');
 

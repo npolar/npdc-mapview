@@ -5,7 +5,6 @@ var npdcCommon = require('npdc-common');
 var angular = require('angular');
 
 
-
 var npdcMapviewApp = angular.module('npdcMapviewApp', ['npdcCommon']);
 
 
