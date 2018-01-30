@@ -1,6 +1,6 @@
 'use strict';
 var npdcCommon = require('npdc-common');
-var AutoConfig = npdcCommon.AutoConfig;
+//var AutoConfig = npdcCommon.AutoConfig;
 
 var angular = require('angular');
 

@@ -165,14 +165,6 @@ require('leaflet.markercluster');
   // Estimate the diagram values
   function GetCoverage(data,db) {
 
-    var redIcon = L.Icon.extend({
-          options: {
-            iconUrl:  'marker-icon.png',
-            iconSize: [8, 8]
-          }
-    });
-
-     //console.log(data);
 
       //Get objects with locations, forget the rest
       let coverage;
