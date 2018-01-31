@@ -186,10 +186,31 @@ require('leaflet.markercluster');
            for (let i = 0; i < len; i++) {
               let entry =  data.feed.entries[i];
            if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
-               var title = "title";
-               var marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(title);
-               markers.addLayer(marker);
-               map.addLayer(markers);
+                //Add marker
+                var marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
+                //Hover over to see title
+                marker.on('mouseover', function (e) {
+                    this.openPopup();
+                });
+                marker.on('mouseout', function (e) {
+                        this.closePopup();
+                });
+                marker.on('click', function (e) {
+                    map.fire('modal', {
+                      title: entry.title,
+                      content: '<ul>' + (new Array(5)).join('<li>Position:'+ entry.position_accuracy+'</li>') + '</ul>',
+                      template: ['<div class="modal-header"><h2>{title}</h2></div>',
+                        '<hr>',
+                        '<div class="modal-body">{content}</div>',
+                        '<div class="modal-footer">',
+                        '</div>'].join(''),
+                      width: 300
+                    });
+                });
+                //Add markercluster
+                markers.addLayer(marker);
+                map.addLayer(markers);
+
            }
           } //north
 
@@ -228,10 +249,6 @@ require('leaflet.markercluster');
                       L.polygon(coverage).addTo(map).bindPopup("Polygon").openPopup();
                 }
              }
-
-           //    map.fire('modal', {
-           //     content: 'your content HTML'
-           //    });
 
 
    //   L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();
