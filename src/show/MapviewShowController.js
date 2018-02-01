@@ -166,7 +166,7 @@ require('leaflet.markercluster');
         }); //end getValues
   }
 
-  // Estimate the diagram values
+   // Estimate the diagram values
   function GetCoverage(data,db) {
 
 
@@ -177,6 +177,21 @@ require('leaflet.markercluster');
       var markers = L.markerClusterGroup();
 
        console.log("data",data);
+
+       //mod
+       function geology(entry) {
+          return ['<div class="modal-header"><h4>'+entry.title+'</h4></div>',
+                       '<div class="modal-header"><h2>'+entry.lithology+'</h2></div>',
+                        '<hr>',
+                        '<div class="modal-body">Description: '+entry.sample_description+'</div>',
+                        '<div class="modal-body">Analysis: '+entry.analysis+'</div>',
+                        '<div class="modal-body">Location name: '+entry['@placename']+'</div>',
+                          '<div class="modal-body">Location: ['+ entry.latitude+','+entry.longitude+']</div>',
+                        '<div class="modal-body">Position accuracy: '+entry.position_accuracy+'</div>',
+                        '<div class="modal-body">Collected year: '+entry.collected_year+'</div>',
+                        '<div class="modal-footer">',
+                        '</div>'].join('')
+       }
 
 
       //Unstandarized data for location - this need to be fixed to get efficient code!
@@ -197,13 +212,7 @@ require('leaflet.markercluster');
                 });
                 marker.on('click', function (e) {
                     map.fire('modal', {
-                      title: entry.title,
-                      content: '<ul>' + (new Array(5)).join('<li>Position:'+ entry.position_accuracy+'</li>') + '</ul>',
-                      template: ['<div class="modal-header"><h2>{title}</h2></div>',
-                        '<hr>',
-                        '<div class="modal-body">{content}</div>',
-                        '<div class="modal-footer">',
-                        '</div>'].join(''),
+                      template: geology(entry),
                       width: 300
                     });
                 });
