@@ -14,7 +14,7 @@ var TemplateService = function () {
                         '<div class="modal-body">Position accuracy: '+entry.position_accuracy+'</div>',
                         '<div class="modal-body">Collected year: '+entry.collected_year+'</div>',
                         '<div class="modal-footer">',
-                        '</div>'].join('')
+                        '</div>'].join('');
   };
 };
 

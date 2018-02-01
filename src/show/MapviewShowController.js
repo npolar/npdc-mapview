@@ -171,7 +171,7 @@ require('leaflet.markercluster');
 
 
       //Get objects with locations, forget the rest
-      let coverage;
+      let marker = {};
       let len = data.feed.entries.length;
 
       var markers = L.markerClusterGroup();
@@ -207,7 +207,7 @@ require('leaflet.markercluster');
               let entry =  data.feed.entries[i];
            if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
                 //Add marker
-                var marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
+                marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
                 finish(marker,map,entry);
            }
           } //north
@@ -221,11 +221,11 @@ require('leaflet.markercluster');
           let  entry = data.feed.entries[i];
           if (entry.hasOwnProperty('geometry')){
              if (entry.geometry.type === 'Point') {
-                markers.addLayer(L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]));
-                map.addLayer(markers);
+                marker =  L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).bindPopup(entry.colony_name);
+                finish(marker,map,entry);
              } else if  ((entry.geometry.type==='GeometryCollection')&&(entry.geometry.geometries.type==='Point')){
-                markers.addLayer(L.marker([entry.geometry.geometries.coordinates[1],entry.geometry.geometries.coordinates[0]]));
-                map.addLayer(markers);
+                marker =  L.marker([entry.geometry.geometries.coordinates[1],entry.geometry.geometries.coordinates[0]]).bindPopup(entry.colony_name);
+                finish(marker,map,entry);
              }
           } //geometry
 
@@ -237,20 +237,21 @@ require('leaflet.markercluster');
       for (let i = 0; i < len; i++) {
            //if locations exist and north is arctic
            if (data.feed.entries[i].hasOwnProperty('locations')){
-             let loc = data.feed.entries[i].locations;
+             let entry = data.feed.entries[i];
+             let loc = entry.locations;
             // console.log(loc.north, loc.south, loc.west, loc.east);
              if (loc.hasOwnProperty('north')&&(loc.north!==null)&&(loc.south!==null)&&(loc.west!==null)&&(loc.east!==null)) {
                 if ((loc.north === loc.south) && (loc.east === loc.west)) {
-                    var popup = L.popup().setLatLng([loc.north, loc.west]).setContent("Point").openOn(map);
+                   marker =  L.marker([loc.north, loc.west]).bindPopup(entry.code);
+                   finish(marker,map,entry);
+
                 } else {
-                     coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
-                      L.polygon(coverage).addTo(map).bindPopup("Polygon").openPopup();
+                     let coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
+                     let polygon =  L.polygon(coverage).addTo(map).bindPopup(entry.code).openPopup();
+                      finish(polygon,map,entry);
                 }
              }
 
-
-   //   L.marker([-72.011389, 2.735]).addTo(map).bindPopup('A popup - easily customizable.').openPopup();
-// }
           } //north
 
       } //loop through entries
