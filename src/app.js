@@ -13,6 +13,7 @@ npdcMapviewApp.controller('MapviewSearchController', require('./search/MapviewSe
 npdcMapviewApp.factory('Mapview', require('./Mapview.js'));
 npdcMapviewApp.factory('MapviewService', require('./show/MapviewService.js'));
 npdcMapviewApp.factory('MapArrayService', require('./show/MapArrayService.js'));
+npdcMapviewApp.service('TemplateService', require('./show/TemplateService.js'));
 
 
 // Bootstrap ngResource models using NpolarApiResource

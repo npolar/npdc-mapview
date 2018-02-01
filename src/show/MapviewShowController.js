@@ -1,6 +1,6 @@
 'use strict';
 
-var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapArrayService, MapviewService) {
+var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapview, npdcAppConfig, NpolarApiSecurity, npolarApiConfig, MapArrayService, MapviewService,TemplateService) {
     'ngInject';
 
   $controller('NpolarBaseController', {
@@ -176,21 +176,26 @@ require('leaflet.markercluster');
 
       var markers = L.markerClusterGroup();
 
-       console.log("data",data);
+      console.log("data",data);
 
-       //mod
-       function geology(entry) {
-          return ['<div class="modal-header"><h4>'+entry.title+'</h4></div>',
-                       '<div class="modal-header"><h2>'+entry.lithology+'</h2></div>',
-                        '<hr>',
-                        '<div class="modal-body">Description: '+entry.sample_description+'</div>',
-                        '<div class="modal-body">Analysis: '+entry.analysis+'</div>',
-                        '<div class="modal-body">Location name: '+entry['@placename']+'</div>',
-                          '<div class="modal-body">Location: ['+ entry.latitude+','+entry.longitude+']</div>',
-                        '<div class="modal-body">Position accuracy: '+entry.position_accuracy+'</div>',
-                        '<div class="modal-body">Collected year: '+entry.collected_year+'</div>',
-                        '<div class="modal-footer">',
-                        '</div>'].join('')
+      function finish(marker, map, entry){
+
+         //Hover over to see title
+                marker.on('mouseover', function (e) {
+                    this.openPopup();
+                });
+                marker.on('mouseout', function (e) {
+                        this.closePopup();
+                });
+                marker.on('click', function (e) {
+                    map.fire('modal', {
+                      template:  TemplateService.geology(entry),
+                      width: 300
+                    });
+                })
+                //Add markercluster
+                markers.addLayer(marker);
+                map.addLayer(markers);
        }
 
 
@@ -203,23 +208,7 @@ require('leaflet.markercluster');
            if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
                 //Add marker
                 var marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
-                //Hover over to see title
-                marker.on('mouseover', function (e) {
-                    this.openPopup();
-                });
-                marker.on('mouseout', function (e) {
-                        this.closePopup();
-                });
-                marker.on('click', function (e) {
-                    map.fire('modal', {
-                      template: geology(entry),
-                      width: 300
-                    });
-                });
-                //Add markercluster
-                markers.addLayer(marker);
-                map.addLayer(markers);
-
+                finish(marker,map,entry);
            }
           } //north
 
