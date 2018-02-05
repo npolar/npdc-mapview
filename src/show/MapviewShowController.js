@@ -158,7 +158,8 @@ require('leaflet.markercluster');
       MapviewService.getValues(link).then
         // on success
         (function(results) {
-            GetCoverage(results.data,db);
+
+            GetCoverage(results.data,doc);
         }),
         //on failure
         (function(response,status){
@@ -167,7 +168,7 @@ require('leaflet.markercluster');
   }
 
    // Estimate the diagram values
-  function GetCoverage(data,db) {
+  function GetCoverage(data,doc) {
 
 
       //Get objects with locations, forget the rest
@@ -176,9 +177,12 @@ require('leaflet.markercluster');
 
       var markers = L.markerClusterGroup();
 
-      console.log("data",data);
+     // console.log("data",data);
+     // console.log("doc",doc);
 
-      function finish(marker, map, entry){
+
+      function finish(marker, map, entry,doc){
+
 
          //Hover over to see title
                 marker.on('mouseover', function (e) {
@@ -188,8 +192,9 @@ require('leaflet.markercluster');
                         this.closePopup();
                 });
                 marker.on('click', function (e) {
+                   console.log(entry[doc.display_parameters[0].heading]);
                     map.fire('modal', {
-                      template:  TemplateService.geology(entry),
+                      template:  TemplateService.geology(entry,doc,Number(marker._latlng.lat).toFixed(4),Number(marker._latlng.lng).toFixed(4)),
                       width: 300
                     });
                 })
@@ -200,39 +205,40 @@ require('leaflet.markercluster');
 
 
       //Unstandarized data for location - this need to be fixed to get efficient code!
-      if (db==="geology/sample") {
+      if (doc.target_database==="geology/sample") {
 
            //Loop through entries
            for (let i = 0; i < len; i++) {
               let entry =  data.feed.entries[i];
            if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
                 //Add marker
-                marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
-                finish(marker,map,entry);
+               // marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
+               marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry[doc.display_main_heading]);
+                finish(marker,map,entry,doc);
            }
           } //north
 
       }
 
       //Unstandarized data for location
-      if (db==="seabird-colony") {
+      if (doc.target_database==="seabird-colony") {
           //loop through entries
       for (let i = 0; i < len; i++) {
           let  entry = data.feed.entries[i];
           if (entry.hasOwnProperty('geometry')){
              if (entry.geometry.type === 'Point') {
-                marker =  L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).bindPopup(entry.colony_name);
-                finish(marker,map,entry);
+                marker =  L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
+                finish(marker,map,entry,doc);
              } else if  ((entry.geometry.type==='GeometryCollection')&&(entry.geometry.geometries.type==='Point')){
-                marker =  L.marker([entry.geometry.geometries.coordinates[1],entry.geometry.geometries.coordinates[0]]).bindPopup(entry.colony_name);
-                finish(marker,map,entry);
+                marker =  L.marker([entry.geometry.geometries.coordinates[1],entry.geometry.geometries.coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
+                finish(marker,map,entry,doc);
              }
           } //geometry
 
       } //loop through entries
       } //seabird-colony
 
-      if (db==="expedition") {
+      if (doc.target_database==="expedition") {
       //loop through entries
       for (let i = 0; i < len; i++) {
            //if locations exist and north is arctic
@@ -242,13 +248,13 @@ require('leaflet.markercluster');
             // console.log(loc.north, loc.south, loc.west, loc.east);
              if (loc.hasOwnProperty('north')&&(loc.north!==null)&&(loc.south!==null)&&(loc.west!==null)&&(loc.east!==null)) {
                 if ((loc.north === loc.south) && (loc.east === loc.west)) {
-                   marker =  L.marker([loc.north, loc.west]).bindPopup(entry.code);
-                   finish(marker,map,entry);
+                   marker =  L.marker([loc.north, loc.west]).bindPopup(entry[doc.display_main_heading]);
+                   finish(marker,map,entry,doc);
 
                 } else {
                      let coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
-                     let polygon =  L.polygon(coverage).addTo(map).bindPopup(entry.code).openPopup();
-                      finish(polygon,map,entry);
+                     let polygon =  L.polygon(coverage).addTo(map).bindPopup(entry[doc.display_main_heading]).openPopup();
+                      finish(polygon,map,entry,doc);
                 }
              }
 
