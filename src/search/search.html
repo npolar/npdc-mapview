@@ -20,10 +20,10 @@
            <img class="md-avatar" ng-src={{icon(e)}} title="ID: {{ e.id }}" >
             <div class="md-list-item-text">
               <h3 class="md-headline">
-              <h3>{{ e.target_database | t }} <em ng-if="e.map">「{{ e.map | t }}」</em>
+              <h3>{{ e.heading | t }} <em ng-if="e.map">「{{ e.map | t }}」</em>
                 </h3>
               </h3>
-              <h4> {{ (e.updated).substring(0,10) }}</h4>
+              <h4> {{e.description}},&nbsp;interface date&nbsp;{{ (e.updated).substring(0,10) }}</h4>
             </div>
 
           </md-list-item>

@@ -192,9 +192,9 @@ require('leaflet.markercluster');
                         this.closePopup();
                 });
                 marker.on('click', function (e) {
-                   console.log(entry[doc.display_parameters[0].heading]);
                     map.fire('modal', {
-                      template:  TemplateService.geology(entry,doc,Number(marker._latlng.lat).toFixed(4),Number(marker._latlng.lng).toFixed(4)),
+                  //    template:  TemplateService.geology(entry,doc,Number(marker._latlng.lat).toFixed(4),Number(marker._latlng.lng).toFixed(4)),
+                     template:  TemplateService.modal(entry,doc,80.453,13.564),
                       width: 300
                     });
                 })
