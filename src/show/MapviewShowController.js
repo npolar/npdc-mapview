@@ -177,14 +177,22 @@ require('leaflet.markercluster');
 
       var markers = L.markerClusterGroup();
 
-     // console.log("data",data);
-     // console.log("doc",doc);
-
 
       function finish(marker, map, entry,doc){
 
+                //Transfer lat, lng for display.
+                let lat = 0;
+                let lng = 0;
+                //Polygon, select first coord
+                if (marker.hasOwnProperty('_latlngs')) {
+                   lat = marker._latlngs[0][0].lat;
+                   lng = marker._latlngs[0][0].lng;
+                } else {  //point
+                   lat = marker._latlng.lat;
+                   lng = marker._latlng.lng;
+                }
 
-         //Hover over to see title
+                //Hover over to see title
                 marker.on('mouseover', function (e) {
                     this.openPopup();
                 });
@@ -193,9 +201,8 @@ require('leaflet.markercluster');
                 });
                 marker.on('click', function (e) {
                     map.fire('modal', {
-                  //    template:  TemplateService.geology(entry,doc,Number(marker._latlng.lat).toFixed(4),Number(marker._latlng.lng).toFixed(4)),
-                     template:  TemplateService.modal(entry,doc,80.453,13.564),
-                      width: 300
+                    template:  TemplateService.modal(entry,doc,Number(lat).toFixed(4),Number(lng).toFixed(4)),
+                    width: 300
                     });
                 })
                 //Add markercluster
