@@ -37,6 +37,9 @@ require('leaflet.markercluster');
   var drawnItems = new L.FeatureGroup();
   map.addLayer(drawnItems);
 
+  //define layer of markers
+  let markersLayer = {};
+
   //Filter button
   $scope.filter = function() {
        let search_init = $scope.document.search_init;
@@ -170,12 +173,21 @@ require('leaflet.markercluster');
    // Estimate the diagram values
   function GetCoverage(data,doc) {
 
-
       //Get objects with locations, forget the rest
       let marker = {};
+
+      //remove old markers
+     // if (markersLayer) { // check
+        map.removeLayer(markersLayer); // remove
+     //   markersLayer.remove();
+      //}
+
       let len = data.feed.entries.length;
 
+
       var markers = L.markerClusterGroup();
+
+      //remove previous markers
 
 
       function finish(marker, map, entry,doc){
@@ -206,8 +218,10 @@ require('leaflet.markercluster');
                     });
                 })
                 //Add markercluster
-                markers.addLayer(marker);
+                markersLayer  = markers.addLayer(marker);
                 map.addLayer(markers);
+
+
        }
 
 
@@ -215,38 +229,48 @@ require('leaflet.markercluster');
       if (doc.target_database==="geology/sample") {
 
            //Loop through entries
+            let j = 0;
            for (let i = 0; i < len; i++) {
               let entry =  data.feed.entries[i];
+
            if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
+                j = j+1;
                 //Add marker
                // marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
                marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry[doc.display_main_heading]);
                 finish(marker,map,entry,doc);
            }
           } //north
+          console.log("count geology/sample: ", j);
 
       }
 
       //Unstandarized data for location
       if (doc.target_database==="seabird-colony") {
           //loop through entries
+           let k = 0;
       for (let i = 0; i < len; i++) {
           let  entry = data.feed.entries[i];
           if (entry.hasOwnProperty('geometry')){
              if (entry.geometry.type === 'Point') {
                 marker =  L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
+                k = k+1;
                 finish(marker,map,entry,doc);
              } else if  ((entry.geometry.type==='GeometryCollection')&&(entry.geometry.geometries.type==='Point')){
                 marker =  L.marker([entry.geometry.geometries.coordinates[1],entry.geometry.geometries.coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
+                k = k+1;
                 finish(marker,map,entry,doc);
              }
           } //geometry
 
+
       } //loop through entries
+       console.log("count seabird-colony: ", k);
       } //seabird-colony
 
       if (doc.target_database==="expedition") {
       //loop through entries
+       let l = 0;
       for (let i = 0; i < len; i++) {
            //if locations exist and north is arctic
            if (data.feed.entries[i].hasOwnProperty('locations')){
@@ -256,18 +280,21 @@ require('leaflet.markercluster');
              if (loc.hasOwnProperty('north')&&(loc.north!==null)&&(loc.south!==null)&&(loc.west!==null)&&(loc.east!==null)) {
                 if ((loc.north === loc.south) && (loc.east === loc.west)) {
                    marker =  L.marker([loc.north, loc.west]).bindPopup(entry[doc.display_main_heading]);
+                    l = l+1;
                    finish(marker,map,entry,doc);
 
                 } else {
                      let coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
                      let polygon =  L.polygon(coverage).addTo(map).bindPopup(entry[doc.display_main_heading]).openPopup();
-                      finish(polygon,map,entry,doc);
+                     l = l+1;
+                     finish(polygon,map,entry,doc);
                 }
              }
 
           } //north
 
       } //loop through entries
+       console.log("count expedition: ", l);
     } //expedition
 
        }
