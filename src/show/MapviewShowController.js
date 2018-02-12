@@ -47,8 +47,6 @@ require('leaflet.markercluster');
        //Get selected map choice
        let map_id = ($scope.map_select.selectedOption.id)-1;
        let map_arr = MapArrayService.getArray(0);
-     //  map_arr[map_id] === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
-
 
        //Get the other choices
        let sel_id_arr = [(($scope.select0.selectedOption.id)-1), (($scope.select1.selectedOption.id)-1), (($scope.select2.selectedOption.id)-1)];
@@ -65,15 +63,14 @@ require('leaflet.markercluster');
             //if yes, overwrite init_str
 
             if (($scope.document.select[j].entry).includes("date") && (sel_id_arr[j] !== 0)) {
-                init_str = "&filter-" + $scope.document.select[j].entry + "=" + sel_arr[sel_id_arr[j]] + "-01-01T00:00:00Z.." + (parseInt(sel_arr[sel_id_arr[j]])+1).toString() + "-01-01T00:00:00Z"; }
-
-            search_init = search_init + init_str;
+              init_str = "&filter-" + $scope.document.select[j].entry + "=" + sel_arr[sel_id_arr[j]] + "-01-01T00:00:00Z.." + (parseInt(sel_arr[sel_id_arr[j]])+1).toString() + "-01-01T00:00:00Z"; }
+              search_init = search_init + init_str.replace(/ /g,"+");
        }
 
       //If search_init starts with &, remove it
       if (search_init.charAt(0) === '&') { search_init = search_init.substring(1); }
 
-      Search($scope.document,search_init.toLowerCase(),map_arr[map_id]);
+      Search($scope.document,search_init,map_arr[map_id]);
 
   };
   //Reset button
@@ -128,7 +125,8 @@ require('leaflet.markercluster');
 
        return {
         availableOptions: availableOptions,
-        selectedOption: {id: '1', name: select_arr[count][0]}
+      //  selectedOption: {id: '1', name: select_arr[count][0]}
+          selectedOption: {id: '1', name: MapArrayService.getArray(count)[0] }
        };
   }
 
@@ -156,7 +154,7 @@ require('leaflet.markercluster');
 
       //Fetch data
       let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&limit=all&"+search_init+"&fields=" + fields;
-      console.log(link);
+      console.log("link", link);
 
       MapviewService.getValues(link).then
         // on success
@@ -226,7 +224,7 @@ require('leaflet.markercluster');
 
 
       //Unstandarized data for location - this need to be fixed to get efficient code!
-      if (doc.target_database==="geology/sample") {
+      if ((doc.target_database==="geology/sample")||(doc.target_database==="expedition/track")) {
 
            //Loop through entries
             let j = 0;
@@ -241,16 +239,17 @@ require('leaflet.markercluster');
                 finish(marker,map,entry,doc);
            }
           } //north
-          console.log("count geology/sample: ", j);
 
       }
 
       //Unstandarized data for location
       if (doc.target_database==="seabird-colony") {
           //loop through entries
+
            let k = 0;
       for (let i = 0; i < len; i++) {
           let  entry = data.feed.entries[i];
+
           if (entry.hasOwnProperty('geometry')){
              if (entry.geometry.type === 'Point') {
                 marker =  L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
@@ -265,7 +264,6 @@ require('leaflet.markercluster');
 
 
       } //loop through entries
-       console.log("count seabird-colony: ", k);
       } //seabird-colony
 
       if (doc.target_database==="expedition") {
@@ -294,7 +292,7 @@ require('leaflet.markercluster');
           } //north
 
       } //loop through entries
-       console.log("count expedition: ", l);
+
     } //expedition
 
        }
