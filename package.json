@@ -15,7 +15,7 @@
     "leaflet": "^1.0.3",
     "leaflet-modal": "^0.1.3",
     "leaflet.markercluster": "^1.3.0",
-    "npdc-common": "npolar/npdc-common#v4.10.10"
+    "npdc-common": "npolar/npdc-common#v4.10.16"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.3.13",

@@ -13,13 +13,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   let antarctica = [-72.01667, 2.5333];
 
   //Build map
-let L = require('../../node_modules/leaflet');
+  let L = require('../../node_modules/leaflet');
 
-
-
-L.Icon.Default.imagePath = '../assets/images/';
-require('leaflet-modal');
-require('leaflet.markercluster');
+  L.Icon.Default.imagePath = '../assets/images/';
+  require('leaflet-modal');
+  require('leaflet.markercluster');
 
   //Initiate map with arctic location
   var map = L.map('mapid', {
@@ -43,6 +41,7 @@ require('leaflet.markercluster');
   //Filter button
   $scope.filter = function() {
        let search_init = $scope.document.search_init;
+       console.log("search_init,filter", search_init);
 
        //Get selected map choice
        let map_id = ($scope.map_select.selectedOption.id)-1;
@@ -70,6 +69,7 @@ require('leaflet.markercluster');
       //If search_init starts with &, remove it
       if (search_init.charAt(0) === '&') { search_init = search_init.substring(1); }
 
+      console.log("search_init", search_init);
       Search($scope.document,search_init,map_arr[map_id]);
 
   };
@@ -138,7 +138,7 @@ require('leaflet.markercluster');
 
       //update map
       //var map_arr = MapArrayService.getArray(0);
-      mapval === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
+  //    mapval === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
 
 
       //Fetch fields to search for
@@ -150,17 +150,14 @@ require('leaflet.markercluster');
           fields = fields + ',' + doc.display_parameters[k].parameter;
       }
 
-
-
       //Fetch data
-      let link =  npolarApiConfig.base + "/" + db +"/?q=&format=json&limit=all&"+search_init+"&fields=" + fields;
+      let link =  npolarApiConfig.base + "/" + db +"/?q=&limit=all&"+search_init+"&fields=" + fields;
       console.log("link", link);
 
       MapviewService.getValues(link).then
         // on success
         (function(results) {
-
-            GetCoverage(results.data,doc);
+            GetCoverage(results.data,doc,mapval);
         }),
         //on failure
         (function(response,status){
@@ -169,10 +166,11 @@ require('leaflet.markercluster');
   }
 
    // Estimate the diagram values
-  function GetCoverage(data,doc) {
+  function GetCoverage(data,doc,mapval) {
 
       //Get objects with locations, forget the rest
       let marker = {};
+
 
       //remove old markers
      // if (markersLayer) { // check
@@ -180,14 +178,9 @@ require('leaflet.markercluster');
      //   markersLayer.remove();
       //}
 
-      let len = data.feed.entries.length;
-
-
       var markers = L.markerClusterGroup();
 
-      //remove previous markers
-
-
+      //modal
       function finish(marker, map, entry,doc){
 
                 //Transfer lat, lng for display.
@@ -218,16 +211,16 @@ require('leaflet.markercluster');
                 //Add markercluster
                 markersLayer  = markers.addLayer(marker);
                 map.addLayer(markers);
-
-
        }
 
 
+
       //Unstandarized data for location - this need to be fixed to get efficient code!
-      if ((doc.target_database==="geology/sample")||(doc.target_database==="expedition/track")) {
+      if (doc.target_database==="geology/sample") {
 
            //Loop through entries
             let j = 0;
+            let len = data.feed.entries.length;
            for (let i = 0; i < len; i++) {
               let entry =  data.feed.entries[i];
 
@@ -239,13 +232,30 @@ require('leaflet.markercluster');
                 finish(marker,map,entry,doc);
            }
           } //north
+      }
+
+      //Track database
+      if (doc.target_database==="expedition/track") {
+
+          //Get search string
+          geoLayer = L.geoJson(data, {
+              style: {
+                  color: '#ff0000',
+                  weight: 1,
+                  opacity: 1
+              }
+          }).bindPopup("Track").addTo(map);
+
+        //  marker =  L.marker([78.22, 15.64]).bindPopup(doc.search_init);
+        //  marker.addTo(map);
 
       }
+
 
       //Unstandarized data for location
       if (doc.target_database==="seabird-colony") {
           //loop through entries
-
+           let len = data.feed.entries.length;
            let k = 0;
       for (let i = 0; i < len; i++) {
           let  entry = data.feed.entries[i];
@@ -268,12 +278,13 @@ require('leaflet.markercluster');
 
       if (doc.target_database==="expedition") {
       //loop through entries
+       let len = data.feed.entries.length;
        let l = 0;
-      for (let i = 0; i < len; i++) {
+       for (let i = 0; i < len; i++) {
            //if locations exist and north is arctic
            if (data.feed.entries[i].hasOwnProperty('locations')){
              let entry = data.feed.entries[i];
-             let loc = entry.locations;
+             let loc = entry.locations[0];
             // console.log(loc.north, loc.south, loc.west, loc.east);
              if (loc.hasOwnProperty('north')&&(loc.north!==null)&&(loc.south!==null)&&(loc.west!==null)&&(loc.east!==null)) {
                 if ((loc.north === loc.south) && (loc.east === loc.west)) {
@@ -292,15 +303,15 @@ require('leaflet.markercluster');
           } //north
 
       } //loop through entries
+      //update map
+      //var map_arr = MapArrayService.getArray(0);
+
 
     } //expedition
+    mapval === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
 
        }
 
 };
-
-
-
-
 
 module.exports = MapviewShowController;
