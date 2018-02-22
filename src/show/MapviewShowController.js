@@ -43,7 +43,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   //Filter button
   $scope.filter = function() {
        let search_init = $scope.document.search_init;
-       console.log("search_init,filter", search_init);
 
        //Get selected map choice
        let map_id = ($scope.map_select.selectedOption.id)-1;
@@ -138,11 +137,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       //Show database name as title
       let db = doc.target_database;
 
-      //update map
-      //var map_arr = MapArrayService.getArray(0);
-  //    mapval === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
-
-
       //Fetch fields to search for
       let fields = "id," + doc.location +
           ',' + doc.display_main_heading +
@@ -175,11 +169,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
 
       //remove old markers
-     // if (markersLayer) { // check
-     map.removeLayer(markersLayer); // remove
-     //   markersLayer.remove();
-      //}
-     map.removeLayer(geoLayer); // remove
+      map.removeLayer(markersLayer); // remove
+      map.removeLayer(geoLayer); // remove
 
       var markers = L.markerClusterGroup();
 
@@ -239,7 +230,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
       //Track database
       if (doc.target_database==="expedition/track") {
-          console.log("scope", $scope);
+        //console.log("data track full:", data.features[0]);
+
 
           //Get search string
           geoLayer = L.geoJson(data, {
@@ -250,14 +242,12 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
               }
           }).addTo(map);
 
-          console.log("data track:", data.features[0].properties.code);
-          console.log("data track2:", data.features[0].geometry.coordinates[0]);
           let coord_start =  data.features[0].geometry.coordinates[0];
           //if previous marker exists
           let marker =  L.marker([coord_start[1], coord_start[0]]).bindPopup(data.features[0].properties.code);
           //  marker.addTo(map);
 
-          finish(marker,map,data,doc,geoLayer);
+          finish(marker,map,data.features[0],doc);
 
       }
 
@@ -313,11 +303,10 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
           } //north
 
       } //loop through entries
-      //update map
-      //var map_arr = MapArrayService.getArray(0);
 
 
     } //expedition
+    //Update map
     mapval === 'Antarctica'? map.setView(new L.LatLng(antarctica[0],antarctica[1]), 4) : map.setView(new L.LatLng(arctic[0], arctic[1]), 4);
 
        }
