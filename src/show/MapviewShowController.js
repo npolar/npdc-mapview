@@ -37,6 +37,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
   //define layer of markers
   let markersLayer = {};
+  //define layer for tracks
+  let geoLayer = {};
 
   //Filter button
   $scope.filter = function() {
@@ -174,9 +176,10 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
       //remove old markers
      // if (markersLayer) { // check
-        map.removeLayer(markersLayer); // remove
+     map.removeLayer(markersLayer); // remove
      //   markersLayer.remove();
       //}
+     map.removeLayer(geoLayer); // remove
 
       var markers = L.markerClusterGroup();
 
@@ -236,6 +239,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
       //Track database
       if (doc.target_database==="expedition/track") {
+          console.log("scope", $scope);
 
           //Get search string
           geoLayer = L.geoJson(data, {
@@ -244,10 +248,16 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                   weight: 1,
                   opacity: 1
               }
-          }).bindPopup("Track").addTo(map);
+          }).addTo(map);
 
-        //  marker =  L.marker([78.22, 15.64]).bindPopup(doc.search_init);
-        //  marker.addTo(map);
+          console.log("data track:", data.features[0].properties.code);
+          console.log("data track2:", data.features[0].geometry.coordinates[0]);
+          let coord_start =  data.features[0].geometry.coordinates[0];
+          //if previous marker exists
+          let marker =  L.marker([coord_start[1], coord_start[0]]).bindPopup(data.features[0].properties.code);
+          //  marker.addTo(map);
+
+          finish(marker,map,data,doc,geoLayer);
 
       }
 
@@ -289,7 +299,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
              if (loc.hasOwnProperty('north')&&(loc.north!==null)&&(loc.south!==null)&&(loc.west!==null)&&(loc.east!==null)) {
                 if ((loc.north === loc.south) && (loc.east === loc.west)) {
                    marker =  L.marker([loc.north, loc.west]).bindPopup(entry[doc.display_main_heading]);
-                    l = l+1;
+                   l = l+1;
                    finish(marker,map,entry,doc);
 
                 } else {
