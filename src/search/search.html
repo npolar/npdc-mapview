@@ -5,7 +5,6 @@
 
 <npdc:search-input feed="feed"></npdc:search-input>
 
-
 <div class="npdc-search">
   <md-content>
 
@@ -14,29 +13,29 @@
       <div class="np-layout-list">
         <md-list>
         <!-- added ned link -->
-          <md-list-item class="md-2-line" ng-repeat="e in feed.entries" ng-href="{{ e.id }}">
-
+          <div ng-if="e.draft !== 'yes'" ng-repeat="e in feed.entries">
+          <md-list-item class="md-2-line" ng-href="{{ e.id }}">
            <img class="md-avatar" ng-src={{icon(e)}} title="ID: {{ e.id }}" >
             <div class="md-list-item-text">
               <h3 class="md-headline">
-              <h3>{{ e.heading | t }} <em ng-if="e.map">「{{ e.map | t }}」</em>
+              <h3>  {{ e.heading | t }} <em ng-if="e.map">「{{ e.map | t }}」</em>
                 </h3>
               </h3>
               <h4> {{e.description}}</h4>
               <!-- <h4> {{e.description}},&nbsp;interface date&nbsp;{{ (e.updated).substring(0,10) }}</h4> -->
             </div>
-
           </md-list-item>
+        </div>
         </md-list>
         <md-divider></md-divider>
       </div>
 
       <div layout-padding>
         <div ng-if="feed.opensearch.totalResults > 0" layout layout-align="space-between center">
-          <div style="line-height: 48px;">{{feed.opensearch.totalResults}}
+    <!--      <div style="line-height: 48px;">{{feed.opensearch.totalResults}}
             results, displaying
             {{ feed.entries.length}}</div>
-          <div>
+          <div> -->
             <md-button class="md-raised md-primary" ng-if="showNext()" ng-click="next()">More ...</md-button>
           </div>
         </div>

@@ -12,7 +12,7 @@ var MapviewSearchController = function ($filter, $scope, $location, $controller,
 
 
   let query = function() {
-    let defaults = { limit: "all", sort: "-updated", fields: 'id,heading,description,updated,map',
+    let defaults = { limit: "all", sort: "-updated", fields: 'id,heading,description,updated,map,draft',
       'date-year': 'updated', facets: 'heading,map' };
    // let invariants = $scope.security.isAuthenticated() ? {} : {"not-draft": "yes"} ;
    let invariants = {};
