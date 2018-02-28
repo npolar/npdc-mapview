@@ -208,7 +208,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
        }
 
 
-
       //Unstandarized data for location - this need to be fixed to get efficient code!
       if (doc.target_database==="geology/sample") {
 
@@ -223,6 +222,25 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                 //Add marker
                // marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
                marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry[doc.display_main_heading]);
+                finish(marker,map,entry,doc);
+           }
+          } //north
+      }
+
+      if (doc.target_database==="polar-bear/incident") {
+
+           //Loop through entries
+            let j = 0;
+            let len = data.feed.entries.length;
+           for (let i = 0; i < len; i++) {
+              let entry =  data.feed.entries[i];
+              let loc = entry.location;
+
+           if ((loc.hasOwnProperty('latitude'))||(loc.hasOwnProperty('longitude'))){
+                j = j+1;
+                //Add marker
+               // marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
+               marker =  L.marker([loc.latitude, loc.longitude]).bindPopup(entry[doc.display_main_heading]);
                 finish(marker,map,entry,doc);
            }
           } //north
