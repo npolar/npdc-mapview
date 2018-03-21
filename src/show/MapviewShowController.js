@@ -304,16 +304,18 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
            //if locations exist and north is arctic
            if (data.feed.entries[i].hasOwnProperty('locations')){
              let entry = data.feed.entries[i];
-             let loc = entry.locations[0];
+
+             for (let j = 0; j < entry.locations.length; j++) {
+               let loc = entry.locations[j];
                console.log("data exp", loc);
-            // console.log(loc.north, loc.south, loc.west, loc.east);
              if (loc.hasOwnProperty('latitude')&&(loc.latitude!==null)&&(loc.longitude!==null)) {
                    marker =  L.marker([loc.latitude, loc.longitude]).bindPopup(entry[doc.display_main_heading]);
                    l = l+1;
                    finish(marker,map,entry,doc);
              }
+           }
 
-          } //north
+         } //latitude
 
       } //loop through entries
 
