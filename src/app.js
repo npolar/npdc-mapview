@@ -42,6 +42,9 @@ npdcMapviewApp.config(($httpProvider, npolarApiConfig) => {
   //angular.extend(npolarApiConfig, autoconfig, { resources });
   npolarApiConfig.base = "https://api-test.data.npolar.no";
   npolarApiConfig.environment = "development";
+  //npolarApiConfig.base = "https://api.npolar.no";
+  //npolarApiConfig.environment = "production";
+
   console.debug("npolarApiConfig", npolarApiConfig);
 
   $httpProvider.interceptors.push('npolarApiInterceptor');

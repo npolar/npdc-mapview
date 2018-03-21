@@ -296,6 +296,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
       if (doc.target_database==="expedition") {
       //loop through entries
+
+
        let len = data.feed.entries.length;
        let l = 0;
        for (let i = 0; i < len; i++) {
@@ -303,19 +305,12 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
            if (data.feed.entries[i].hasOwnProperty('locations')){
              let entry = data.feed.entries[i];
              let loc = entry.locations[0];
+               console.log("data exp", loc);
             // console.log(loc.north, loc.south, loc.west, loc.east);
-             if (loc.hasOwnProperty('north')&&(loc.north!==null)&&(loc.south!==null)&&(loc.west!==null)&&(loc.east!==null)) {
-                if ((loc.north === loc.south) && (loc.east === loc.west)) {
-                   marker =  L.marker([loc.north, loc.west]).bindPopup(entry[doc.display_main_heading]);
+             if (loc.hasOwnProperty('latitude')&&(loc.latitude!==null)&&(loc.longitude!==null)) {
+                   marker =  L.marker([loc.latitude, loc.longitude]).bindPopup(entry[doc.display_main_heading]);
                    l = l+1;
                    finish(marker,map,entry,doc);
-
-                } else {
-                     let coverage = [[loc.north, loc.west], [loc.north, loc.east],[loc.south, loc.east], [loc.south, loc.west]];
-                     let polygon =  L.polygon(coverage).addTo(map).bindPopup(entry[doc.display_main_heading]).openPopup();
-                     l = l+1;
-                     finish(polygon,map,entry,doc);
-                }
              }
 
           } //north
