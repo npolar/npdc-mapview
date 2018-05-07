@@ -283,8 +283,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                 marker =  L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
                 k = k+1;
                 finish(marker,map,entry,doc);
-             } else if  ((entry.geometry.type==='GeometryCollection')&&(entry.geometry.geometries.type==='Point')){
-                marker =  L.marker([entry.geometry.geometries.coordinates[1],entry.geometry.geometries.coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
+             } else if  (entry.geometry.geometries[0].type==='Point'){
+                marker =  L.marker([entry.geometry.geometries[0].coordinates[1],entry.geometry.geometries[0].coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
                 k = k+1;
                 finish(marker,map,entry,doc);
              }
