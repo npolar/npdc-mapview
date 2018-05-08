@@ -1,6 +1,6 @@
 {
   "name": "npdc-mapview",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "NPI mapview database",
   "main": "gulpfile.js",
   "scripts": {
