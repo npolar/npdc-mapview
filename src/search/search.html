@@ -15,7 +15,7 @@
         <!-- added ned link -->
           <div ng-if="e.draft !== 'yes'" ng-repeat="e in feed.entries">
           <md-list-item class="md-2-line" ng-href="{{ e.id }}">
-           <img class="md-avatar" ng-src={{icon(e)}} title="ID: {{ e.id }}" >
+           <img class="md-avatar" ng-src={{icon(e)}} title="ID: {{ e.id }}" />
             <div class="md-list-item-text">
               <h3 class="md-headline">
               <h3>  {{ e.heading | t }} <em ng-if="e.map">「{{ e.map | t }}」</em>
