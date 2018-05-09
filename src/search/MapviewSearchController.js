@@ -8,14 +8,15 @@ var MapviewSearchController = function ($filter, $scope, $location, $controller,
   $scope.resource = Mapview;
 
   npdcAppConfig.cardTitle = "Mapview";
-  npdcAppConfig.search.local.results.subtitle = "heading";
+  npdcAppConfig.search.local.results.subtitle = "map";
+  npdcAppConfig.search.local.results.title = "heading";
+  npdcAppConfig.search.local.results.detail = "description";
 
 
   let query = function() {
     let defaults = { limit: "all", sort: "-updated", fields: 'id,heading,description,updated,map,draft',
       'date-year': 'updated', facets: 'heading,map' };
-   // let invariants = $scope.security.isAuthenticated() ? {} : {"not-draft": "yes"} ;
-   let invariants = {};
+    let invariants = $scope.security.isAuthenticated() ? {} : {"not-draft": "yes"} ;
     return Object.assign({}, defaults, invariants);
   };
 
