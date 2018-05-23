@@ -196,6 +196,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                 marker.on('mouseout', function (e) {
                         this.closePopup();
                 });
+
                 marker.on('click', function (e) {
                     map.fire('modal', {
                     template:  TemplateService.modal(entry,doc,Number(lat).toFixed(4),Number(lng).toFixed(4)),
@@ -273,6 +274,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       //Unstandarized data for location
       if (doc.target_database==="seabird-colony") {
           //loop through entries
+
            let len = data.feed.entries.length;
            let k = 0;
       for (let i = 0; i < len; i++) {
@@ -283,7 +285,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                 marker =  L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
                 k = k+1;
                 finish(marker,map,entry,doc);
-             } else if  (entry.geometry.geometries[0].type==='Point'){
+             } else if  ((entry.geometry.geometries)&&(entry.geometry.geometries[0].type==='Point')){
                 marker =  L.marker([entry.geometry.geometries[0].coordinates[1],entry.geometry.geometries[0].coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
                 k = k+1;
                 finish(marker,map,entry,doc);
