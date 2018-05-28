@@ -282,11 +282,11 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
           if (entry.hasOwnProperty('geometry')){
              if (entry.geometry.type === 'Point') {
-                marker =  L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
+                marker =  L.marker([entry.geometry.coordinates[1], entry.geometry.coordinates[0]]).bindPopup(entry[doc.display_main_heading] + '/'+ entry.species +'('+ (entry.start_date).substr(0,4) +')');
                 k = k+1;
                 finish(marker,map,entry,doc);
              } else if  ((entry.geometry.geometries)&&(entry.geometry.geometries[0].type==='Point')){
-                marker =  L.marker([entry.geometry.geometries[0].coordinates[1],entry.geometry.geometries[0].coordinates[0]]).bindPopup(entry[doc.display_main_heading]);
+                marker =  L.marker([entry.geometry.geometries[0].coordinates[1],entry.geometry.geometries[0].coordinates[0]]).bindPopup(entry[doc.display_main_heading] + '/'+ entry.species+'('+ (entry.start_date).substr(0,4) +')');
                 k = k+1;
                 finish(marker,map,entry,doc);
              }
