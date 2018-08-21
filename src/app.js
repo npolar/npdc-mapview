@@ -1,6 +1,6 @@
 'use strict';
 var npdcCommon = require('npdc-common');
-//var AutoConfig = npdcCommon.AutoConfig;
+var AutoConfig = npdcCommon.AutoConfig;
 
 var angular = require('angular');
 
@@ -39,11 +39,11 @@ npdcMapviewApp.config(require('./router'));
 
 npdcMapviewApp.config(($httpProvider, npolarApiConfig) => {
   var autoconfig = new AutoConfig("production");
-  angular.extend(npolarApiConfig, autoconfig, { resources });
+  Object.assign(npolarApiConfig, autoconfig, { resources });
   npolarApiConfig.base = "https://api.npolar.no";
   npolarApiConfig.environment = "production";
 
-  console.debug("npolarApiConfig", npolarApiConfig);
+//  console.debug("npolarApiConfig", npolarApiConfig);
 
   $httpProvider.interceptors.push('npolarApiInterceptor');
 });
