@@ -38,10 +38,10 @@ npdcMapviewApp.config(require('./router'));
 
 
 npdcMapviewApp.config(($httpProvider, npolarApiConfig) => {
-  //var autoconfig = new AutoConfig("production");
-  //angular.extend(npolarApiConfig, autoconfig, { resources });
-  npolarApiConfig.base = "https://api-test.data.npolar.no";
-  npolarApiConfig.environment = "development";
+  var autoconfig = new AutoConfig("production");
+  angular.extend(npolarApiConfig, autoconfig, { resources });
+  //npolarApiConfig.base = "https://api-test.data.npolar.no";
+  //npolarApiConfig.environment = "development";
 
   console.debug("npolarApiConfig", npolarApiConfig);
 
