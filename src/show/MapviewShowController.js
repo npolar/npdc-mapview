@@ -26,6 +26,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       position: 'topleft'
   }}).setView(arctic, 4);
 
+
+
   L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/', {
       maxZoom: 18,
       attribution: 'Esmapri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community'
@@ -34,6 +36,12 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   // Initialise the FeatureGroup to store editable layers
   var drawnItems = new L.FeatureGroup();
   map.addLayer(drawnItems);
+
+  //Leaflet have problems with finding the map size
+    //invalidateSize checks if the map container size has changed and updates map.
+    //Since map resizing is done by css, need to delay the invalidateSize check.
+    setTimeout(function(){ map.invalidateSize()}, 20);
+
 
   //define layer of markers
   let markersLayer = {};
@@ -47,6 +55,9 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
        //Get selected map choice
        let map_id = ($scope.map_select.selectedOption.id)-1;
        let map_arr = MapArrayService.getArray(0);
+
+       let free_search = $scope.free_search;
+
 
        //Get the other choices
        let sel_id_arr = [(($scope.select0.selectedOption.id)-1), (($scope.select1.selectedOption.id)-1), (($scope.select2.selectedOption.id)-1)];
@@ -70,8 +81,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       //If search_init starts with &, remove it
       if (search_init.charAt(0) === '&') { search_init = search_init.substring(1); }
 
-      console.log("search_init", search_init);
-      Search($scope.document,search_init,map_arr[map_id]);
+      //console.log("search_init", search_init);
+      Search($scope.document,search_init,map_arr[map_id],free_search);
 
   };
   //Reset button
@@ -82,7 +93,9 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       $scope.select1.selectedOption = {id: '1', name: MapArrayService.getArray(1)[1]};
       $scope.select2.selectedOption = {id: '1', name: MapArrayService.getArray(1)[2]};
       let search_init = $scope.document.search_init;
-      Search($scope.document,search_init,map_arr[0]);
+      $scope.free_search = "";
+      let free_search = "";
+      Search($scope.document,search_init,map_arr[0],free_search);
   };
 
     //Leaflet have problems with finding the map size
@@ -105,8 +118,9 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
        $scope.select0 = Select($scope.document.select[0].enum,1);
        $scope.select1 = Select($scope.document.select[1].enum,2);
        $scope.select2 = Select($scope.document.select[2].enum,3);
+       $scope.free_search = ""
 
-       Search($scope.document,$scope.document.search_init,map_arr[0]);
+       Search($scope.document,$scope.document.search_init,map_arr[0],"");
 
     });  //promise
   }; //show
@@ -132,7 +146,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   }
 
   //The database search call get display items
-  function Search(doc,search_init,mapval){
+  function Search(doc,search_init,mapval,free_search){
 
       //Show database name as title
       let db = doc.target_database;
@@ -147,8 +161,8 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       }
 
       //Fetch data
-      let link =  npolarApiConfig.base + "/" + db +"/?q=&limit=all&"+search_init+"&fields=" + fields;
-      console.log("link", link);
+      let link =  npolarApiConfig.base + "/" + db +"/?q="+free_search+"&limit=all&"+search_init+"&fields=" + fields;
+      console.log("link2", link);
 
       MapviewService.getValues(link).then
         // on success
