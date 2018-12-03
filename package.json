@@ -15,17 +15,17 @@
     "leaflet": "^1.0.3",
     "leaflet-modal": "^0.1.3",
     "leaflet.markercluster": "^1.3.0",
-    "npdc-common": "npolar/npdc-common#v4.11.2"
+    "npdc-common": "npolar/npdc-common#v4.11.3"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.3.13",
-    "gulp": "^3.9.0",
-    "should": "^7.0.2",
-    "npdc-gulp": "npolar/npdc-gulp",
     "babelify": "^7.2.0",
     "browserify": "^13.0.0",
     "browserify-ngannotate": "^2.0.0",
-    "partialify": "^3.1.3"
+    "gulp": "^3.9.0",
+    "npdc-gulp": "github:npolar/npdc-gulp",
+    "partialify": "^3.1.3",
+    "should": "^7.0.2"
   },
   "browserify": {
     "transform": [
