@@ -40,7 +40,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   //Leaflet have problems with finding the map size
     //invalidateSize checks if the map container size has changed and updates map.
     //Since map resizing is done by css, need to delay the invalidateSize check.
-    setTimeout(function(){ map.invalidateSize()}, 20);
+    setTimeout(function(){ map.invalidateSize();}, 20);
 
 
   //define layer of markers
@@ -61,6 +61,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
        //Get the other choices
        let sel_id_arr = [(($scope.select0.selectedOption.id)-1), (($scope.select1.selectedOption.id)-1), (($scope.select2.selectedOption.id)-1)];
+
 
        //Go through the select menus
        for (let j = 0; j < $scope.document.select.length; j++) {
@@ -118,7 +119,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
        $scope.select0 = Select($scope.document.select[0].enum,1);
        $scope.select1 = Select($scope.document.select[1].enum,2);
        $scope.select2 = Select($scope.document.select[2].enum,3);
-       $scope.free_search = ""
+       $scope.free_search = "";
 
        Search($scope.document,$scope.document.search_init,map_arr[0],"");
 
@@ -160,9 +161,10 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
           fields = fields + ',' + doc.display_parameters[k].parameter;
       }
 
+
       //Fetch data
       let link =  npolarApiConfig.base + "/" + db +"/?q="+free_search+"&limit=all&"+search_init+"&fields=" + fields;
-      console.log("link2", link);
+      //console.log("link2", link);
 
       MapviewService.getValues(link).then
         // on success
@@ -180,7 +182,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
       //Get objects with locations, forget the rest
       let marker = {};
-
 
       //remove old markers
       map.removeLayer(markersLayer); // remove
@@ -211,12 +212,13 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                         this.closePopup();
                 });
 
+
                 marker.on('click', function (e) {
                     map.fire('modal', {
                     template:  TemplateService.modal(entry,doc,Number(lat).toFixed(4),Number(lng).toFixed(4)),
                     width: 300
                     });
-                })
+                });
                 //Add markercluster
                 markersLayer  = markers.addLayer(marker);
                 map.addLayer(markers);
@@ -237,7 +239,28 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                 //Add marker
                // marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry.title);
                marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry[doc.display_main_heading]);
-                finish(marker,map,entry,doc);
+               finish(marker,map,entry,doc);
+           }
+          } //north
+      }
+
+      if (doc.target_database==="ecotox/fieldwork") {
+
+           //Loop through entries
+
+            let len = data.feed.entries.length;
+           for (let i = 0; i < len; i++) {
+              let entry =  data.feed.entries[i].entry;
+           for (let j = 0; j < entry.length; j++) {
+           if ((entry[j].hasOwnProperty('latitude'))||(entry[j].hasOwnProperty('longitude'))){
+
+               //Add marker
+               let entry_arr = (doc.display_main_heading).split('.');
+
+               marker =  L.marker([entry[j].latitude, entry[j].longitude]).bindPopup(entry[j][entry_arr[1]]);
+
+                finish(marker,map,entry[j],doc);
+          }
            }
           } //north
       }
