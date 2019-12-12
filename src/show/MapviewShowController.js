@@ -82,7 +82,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       //If search_init starts with &, remove it
       if (search_init.charAt(0) === '&') { search_init = search_init.substring(1); }
 
-      //console.log("search_init", search_init);
       Search($scope.document,search_init,map_arr[map_id],free_search);
 
   };
@@ -155,7 +154,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
       //Fetch fields to search for
       let fields = "id," + doc.location +
           ',' + doc.display_main_heading +
-          ',' + doc.display_top_heading;
+          ',' + doc.display_top_heading +  ',files' ;
 
       for (let k = 0; k < doc.display_parameters.length; k++) {
           fields = fields + ',' + doc.display_parameters[k].parameter;
@@ -164,7 +163,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
       //Fetch data
       let link =  npolarApiConfig.base + "/" + db +"/?q="+free_search+"&limit=all&"+search_init+"&fields=" + fields;
-      //console.log("link2", link);
 
       MapviewService.getValues(link).then
         // on success
@@ -179,6 +177,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
    // Estimate the diagram values
   function GetCoverage(data,doc,mapval) {
+
 
       //Get objects with locations, forget the rest
       let marker = {};
@@ -211,6 +210,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
                 marker.on('mouseout', function (e) {
                         this.closePopup();
                 });
+
 
 
                 marker.on('click', function (e) {
@@ -246,23 +246,26 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
       if (doc.target_database==="ecotox/fieldwork") {
 
+          //Fetch the key function from the login key in order to download images and excel files
+          //$scope.excel_key = get_key(NpolarApiSecurity, EcotoxExcel.path);
+
            //Loop through entries
 
             let len = data.feed.entries.length;
            for (let i = 0; i < len; i++) {
-              let entry =  data.feed.entries[i].entry;
-           for (let j = 0; j < entry.length; j++) {
-           if ((entry[j].hasOwnProperty('latitude'))||(entry[j].hasOwnProperty('longitude'))){
+              let entry =  data.feed.entries[i];
+
+
+           if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
 
                //Add marker
                let entry_arr = (doc.display_main_heading).split('.');
-
-               marker =  L.marker([entry[j].latitude, entry[j].longitude]).bindPopup(entry[j][entry_arr[1]]);
-
-                finish(marker,map,entry[j],doc);
-          }
+               marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry[doc.display_main_heading]);
+                finish(marker,map,entry,doc);
            }
           } //north
+
+
       }
 
       if (doc.target_database==="polar-bear/incident") {
@@ -286,7 +289,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
       //Track database
       if (doc.target_database==="expedition/track") {
-        //console.log("data track full:", data.features[0]);
 
 
           //Get search string
@@ -346,7 +348,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
 
              for (let j = 0; j < entry.locations.length; j++) {
                let loc = entry.locations[j];
-               console.log("data exp", loc);
+
              if (loc.hasOwnProperty('latitude')&&(loc.latitude!==null)&&(loc.longitude!==null)) {
                    marker =  L.marker([loc.latitude, loc.longitude]).bindPopup(entry[doc.display_main_heading]);
                    l = l+1;
