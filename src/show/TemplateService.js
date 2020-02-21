@@ -2,7 +2,7 @@
 //service
 
 // @ngInject
-var TemplateService = function () {
+var TemplateService = function (NpolarApiSecurity) {
   this.modal = function (entry,doc,lat,lng) {
     let str = '';
 
@@ -18,8 +18,16 @@ var TemplateService = function () {
       for (let i=0;i<(doc.display_parameters.length);i++){
         str = str + '<div class="modal-body">'+doc.display_parameters[i].heading +': '+ entry[doc.display_parameters[i].parameter] + '</div>';
       }
-      str = str + '<div class="modal-body"><a href='+ doc.display_link + entry.id + ' target="_blank">Get file</a>';
+      let authorized = NpolarApiSecurity.isAuthorized('create', 'https://api.npolar.no/ecotox/fieldwork');
 
+      if (authorized){
+          //Differ between old excel files and files put directly into the database.
+          if (typeof(entry.files) === "undefined"){
+               str = str + '<div class="modal-body"><a href='+ doc.display_link + 'fieldwork/' + entry.id +'/csv target="_blank">Get file</a>';
+          } else {
+               str = str + '<div class="modal-body"><a href='+ doc.display_link + 'excel/' + entry.files[0].uri +'/_file/'+ entry.files[0].hash  +' target="_blank">Get file</a>';
+          }
+      }
       return ['<div class="modal-header"><h4>'+entry[doc.display_top_heading]+ ' ('+ lat+','+ lng +') </h4></div>',
                      '<div class="modal-header"><h2>'+entry[doc.display_main_heading]+'</h2></div>',
                      '<hr>', str,'<div class="modal-footer">','</div>'].join('');

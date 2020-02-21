@@ -27,7 +27,6 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
   }}).setView(arctic, 4);
 
 
-
   L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/', {
       maxZoom: 18,
       attribution: 'Esmapri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community'
@@ -259,7 +258,7 @@ var MapviewShowController = function($controller, $routeParams,$scope, $q, Mapvi
            if ((entry.hasOwnProperty('latitude'))||(entry.hasOwnProperty('longitude'))){
 
                //Add marker
-               let entry_arr = (doc.display_main_heading).split('.');
+              // let entry_arr = (doc.display_main_heading).split('.');
                marker =  L.marker([entry.latitude, entry.longitude]).bindPopup(entry[doc.display_main_heading]);
                 finish(marker,map,entry,doc);
            }
